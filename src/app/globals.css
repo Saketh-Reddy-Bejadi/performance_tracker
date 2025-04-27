@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+:root {
+  --font-poppins: "Poppins", sans-serif;
+}
+body {
+  font-family: var(--font-poppins);
+  background-color: #000000;
+  color: #ffffff;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(140, 140, 140, 0.2) transparent;
+}
+th{
+  font-weight:550;
+  border: 1px solid rgba(56, 56, 56, 0.565);
+}
+td{
+  border: 1px solid rgb(56, 56, 56,0.565);
+}
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
