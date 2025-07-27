@@ -1,4 +1,3 @@
-
 export const fetchUsers = async () => {
   try {
     const token = import.meta.env.VITE_TOKEN;

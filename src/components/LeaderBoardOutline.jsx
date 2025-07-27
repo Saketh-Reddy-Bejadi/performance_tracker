@@ -8,6 +8,7 @@ const LeaderBoardOutline = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const loadData = async () => {
@@ -28,6 +29,19 @@ const LeaderBoardOutline = () => {
     loadData();
   }, []);
 
+  const filterData = (row) => {
+    if (!search.trim()) return true;
+    const q = search.trim().toLowerCase();
+    return (
+      row.rollNumber.toLowerCase().includes(q) ||
+      row.codeforces.handle.toLowerCase().includes(q) ||
+      row.gfg.handle.toLowerCase().includes(q) ||
+      row.leetcode.handle.toLowerCase().includes(q) ||
+      row.codechef.handle.toLowerCase().includes(q) ||
+      row.hackerRank.handle.toLowerCase().includes(q)
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -47,6 +61,15 @@ const LeaderBoardOutline = () => {
   return (
     <>
       <div className="overflow-hidden">
+        <div className="p-4 bg-black border-b border-zinc-800">
+          <input
+            type="text"
+            className="w-full p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none"
+            placeholder="Search by roll number or any handle..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         <div className="max-h-screen text-black overflow-y-auto border border-zinc-800">
           <table className="min-w-full table-auto border border-zinc-800 text-white">
             <Attributes
@@ -54,7 +77,7 @@ const LeaderBoardOutline = () => {
               setShowDetails={setShowDetails}
             />
             <StudentData
-              data={data}
+              data={data.filter(filterData)}
               showDetails={showDetails}
               setShowDetails={setShowDetails}
             />
