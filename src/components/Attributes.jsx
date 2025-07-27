@@ -30,7 +30,7 @@ const Attributes = ({ showDetails, setShowDetails }) => {
           <th colSpan={`${showDetails ? "3" : ""}`} className=" px-4 py-5">
             Codechef
           </th>
-          <th colSpan={`${showDetails ? "3" : ""}`} className=" px-4 py-5">
+          <th colSpan={`${showDetails ? "2" : ""}`} className=" px-4 py-5">
             HackerRank
           </th>
           <th rowSpan={`${showDetails ? "2" : ""}`} className=" px-4 py-5">
@@ -42,29 +42,22 @@ const Attributes = ({ showDetails, setShowDetails }) => {
             <tr>
               <th className=" px-20 py-4">Handle</th>
               <th className=" px-5 ">Rating</th>
-              <th className=" px-5 ">Total</th>
+              <th className=" px-5 ">Contests Attended</th>
               <th className=" px-20 ">Handle</th>
               <th className=" px-5 ">Contest Score</th>
               <th className=" px-5 ">Practice Score</th>
-              <th className=" px-5 ">Total</th>
+              <th className=" px-5 ">Contests Attended</th>
               <th className=" px-20 ">Handle</th>
               <th className=" px-5 ">Rating</th>
-              <th className=" px-5 ">Total</th>
+              <th className=" px-5 ">Contests Attended</th>
+              <th className=" px-20 ">Handle</th>
+              <th className=" px-5 ">Rating</th>
+              <th className=" px-5 ">Contests Attended</th>
               <th className=" px-20 ">Handle</th>
               <th className=" px-5 ">Practice Score</th>
-              <th className=" px-5 ">Total</th>
-              <th className=" px-20 ">Handle</th>
-              <th className=" px-5 ">Practice Score</th>
-              <th className=" px-5 ">Total</th>
             </tr>
           ) : null
-          // (<tr>
-          //   <th className="border border-zinc-800 px-4 py-5">Total Score</th>
-          //   <th className="border border-zinc-800 px-4 py-5">Total Score</th>
-          //   <th className="border border-zinc-800 px-4 py-5">Total Score</th>
-          //   <th className="border border-zinc-800 px-4 py-5">Total Score</th>
-          //   <th className="border border-zinc-800 px-4 py-5">Total Score</th>
-          // </tr>)
+         
         }
       </thead>
     </>
