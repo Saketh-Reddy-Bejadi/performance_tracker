@@ -15,7 +15,7 @@ const StudentData = ({ data, showDetails }) => {
         {data.map((row, index) =>
           showDetails ? (
             <tr key={index} className="whitespace-nowrap text-center">
-              <td className=" px-4 py-5">{index + 1}</td>
+              <td className=" px-4 py-5">{row.serial}</td>
               <td className=" ">{row.rollNumber}</td>
               <td className="">{displayHandle(row.codeforces.handle)}</td>
               <td className="">{row.codeforces.rating}</td>
@@ -36,7 +36,7 @@ const StudentData = ({ data, showDetails }) => {
             </tr>
           ) : (
             <tr key={index} className="whitespace-nowrap text-center">
-              <td className=" px-4 py-5">{index + 1}</td>
+              <td className=" px-4 py-5">{row.serial}</td>
               <td className=" ">{row.rollNumber}</td>
               <td className="">{row.codeforces.rating}</td>
               <td className="">{row.gfg.contestScore}</td>

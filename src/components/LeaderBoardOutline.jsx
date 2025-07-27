@@ -16,7 +16,16 @@ const LeaderBoardOutline = () => {
         setLoading(true);
         setError(null);
         const users = await fetchUsers();
-        const transformedData = transformUserData(users);
+        let transformedData = transformUserData(users);
+        // Sort by percentile (descending)
+        transformedData = transformedData.sort(
+          (a, b) => parseFloat(b.percentile) - parseFloat(a.percentile)
+        );
+        // Assign fixed serial number (rank) based on sorted order
+        transformedData = transformedData.map((user, idx) => ({
+          ...user,
+          serial: idx + 1,
+        }));
         setData(transformedData);
       } catch (err) {
         setError(err.message);
@@ -80,6 +89,7 @@ const LeaderBoardOutline = () => {
               data={data.filter(filterData)}
               showDetails={showDetails}
               setShowDetails={setShowDetails}
+              showSerialNumber={true}
             />
           </table>
         </div>
