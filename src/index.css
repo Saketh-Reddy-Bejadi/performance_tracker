@@ -1,10 +1,8 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 
-:root {
-  --font-poppins: "Poppins", sans-serif;
-}
 body {
-  font-family: var(--font-poppins);
+  font-family: "Outfit", sans-serif;
   background-color: #000000;
   color: #ffffff;
 }
@@ -12,12 +10,12 @@ body {
   scrollbar-width: thin;
   scrollbar-color: rgba(140, 140, 140, 0.2) transparent;
 }
-th{
-  font-weight:550;
+th {
+  font-weight: 550;
   border: 1px solid rgba(56, 56, 56, 0.565);
 }
-td{
-  border: 1px solid rgb(56, 56, 56,0.565);
+td {
+  border: 1px solid rgb(56, 56, 56, 0.565);
 }
 table {
   border-collapse: separate;

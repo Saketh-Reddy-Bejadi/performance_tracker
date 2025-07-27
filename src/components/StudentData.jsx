@@ -1,7 +1,7 @@
 import React from "react";
 import { DATA_2026 } from "../../data/studentData";
 
-const StudentData = ({data,showDetails, setShowDetails}) => {
+const StudentData = ({data,showDetails}) => {
   return (
     <>
      <tbody>
