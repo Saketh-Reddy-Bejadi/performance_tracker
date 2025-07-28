@@ -14,6 +14,7 @@ const LeaderBoardOutline = () => {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [scrapingStats, setScrapingStats] = useState(null);
+  const [showDevNotice, setShowDevNotice] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
@@ -96,6 +97,36 @@ const LeaderBoardOutline = () => {
 
   return (
     <>
+      {/* Development Notice Popup */}
+      {showDevNotice && (
+        <div className="fixed inset-0 bg-black/60 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-yellow-400 text-lg font-semibold">
+                🚧 Development Notice
+              </h3>
+              <button
+                onClick={() => setShowDevNotice(false)}
+                className="text-zinc-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-zinc-300 mb-4">
+              The data displayed on this leaderboard may not always be accurate, as the platform is still under development. Scores and values shown here could be incorrect or incomplete.
+            </p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowDevNotice(false)}
+                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded transition-colors"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="overflow-hidden">
         {/* Mobile Layout */}
         <div className="md:hidden p-4 bg-black border-b border-zinc-800">
