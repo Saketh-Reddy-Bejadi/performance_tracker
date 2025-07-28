@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import Attributes from "./Attributes";
 import StudentData from "./StudentData";
-import { fetchUsers, transformUserData } from "../services/api";
+import {
+  fetchUsers,
+  transformUserData,
+  fetchScrapingStats,
+} from "../services/api";
 
 const LeaderBoardOutline = () => {
   const [showDetails, setShowDetails] = useState(true);
@@ -9,13 +13,20 @@ const LeaderBoardOutline = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+  const [scrapingStats, setScrapingStats] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const users = await fetchUsers();
+
+        // Fetch users and scraping stats in parallel
+        const [users, stats] = await Promise.all([
+          fetchUsers(),
+          fetchScrapingStats(),
+        ]);
+
         let transformedData = transformUserData(users);
         // Sort by percentile (descending)
         transformedData = transformedData.sort(
@@ -26,7 +37,9 @@ const LeaderBoardOutline = () => {
           ...user,
           serial: idx + 1,
         }));
+
         setData(transformedData);
+        setScrapingStats(stats);
       } catch (err) {
         setError(err.message);
         console.error("Failed to load data:", err);
@@ -51,6 +64,20 @@ const LeaderBoardOutline = () => {
     );
   };
 
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return "N/A";
+    try {
+      const date = new Date(timestamp);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const time = date.toLocaleTimeString();
+      return `${day}/${month}/${year}, ${time}`;
+    } catch {
+      return "Invalid timestamp";
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -70,15 +97,42 @@ const LeaderBoardOutline = () => {
   return (
     <>
       <div className="overflow-hidden">
-        <div className="p-4 bg-black border-b border-zinc-800">
-          <input
-            type="text"
-            className="w-full p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none"
-            placeholder="Search by roll number or any handle..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        {/* Mobile Layout */}
+        <div className="md:hidden p-4 bg-black border-b border-zinc-800">
+          <div className="flex flex-col space-y-4">
+            {scrapingStats && (
+              <div className="text-zinc-400 text-md text-center">
+                Last updated: {formatTimestamp(scrapingStats.lastScraped)}
+              </div>
+            )}
+            <input
+              type="text"
+              className="w-full p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none"
+              placeholder="Search by roll number or any handle..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </div>
+
+        {/* Desktop/Tablet Layout */}
+        <div className="hidden md:flex p-4 bg-black border-b border-zinc-800">
+          <div className="flex justify-between items-center w-full">
+            <input
+              type="text"
+              className="flex-1 p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none mr-4"
+              placeholder="Search by roll number or any handle..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {scrapingStats && (
+              <div className="text-zinc-400 text-md">
+                Last updated: {formatTimestamp(scrapingStats.lastScraped)}
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="max-h-screen text-black overflow-y-auto border border-zinc-800">
           <table className="min-w-full table-auto border border-zinc-800 text-white">
             <Attributes

@@ -57,13 +57,6 @@ const Attributes = ({ showDetails, setShowDetails }) => {
               <th className=" px-5 ">Practice Score</th>
             </tr>
           ) : null
-          // (<tr>
-          //   <th className="border border-zinc-800 px-4 py-5">Total Score</th>
-          //   <th className="border border-zinc-800 px-4 py-5">Total Score</th>
-          //   <th className="border border-zinc-800 px-4 py-5">Total Score</th>
-          //   <th className="border border-zinc-800 px-4 py-5">Total Score</th>
-          //   <th className="border border-zinc-800 px-4 py-5">Total Score</th>
-          // </tr>)
         }
       </thead>
     </>
