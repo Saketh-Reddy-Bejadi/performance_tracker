@@ -48,10 +48,10 @@ export const transformUserData = (users) => {
       count: user.CodeforcesHandle?.contests || 0,
     },
     gfg: {
-      handle: user.GFGHandle?.handle || "",
-      contestScore: Number((user.GFGHandle?.contestRating || 0).toFixed(2)),
-      practiceScore: Number((user.GFGHandle?.codingScore || 0).toFixed(2)),
-      count: user.GFGHandle?.contestsAttended || 0,
+      handle: user.GeeksForGeeksHandle?.handle || "",
+      contestScore: Number((user.GeeksForGeeksHandle?.contestRating || 0).toFixed(2)),
+      practiceScore: Number((user.GeeksForGeeksHandle?.codingScore || 0).toFixed(2)),
+      count: user.GeeksForGeeksHandle?.contestsAttended || 0,
     },
     leetcode: {
       handle: user.LeetCodeHandle?.handle || "",
