@@ -37,27 +37,25 @@ const Attributes = ({ showDetails, setShowDetails }) => {
             Percentile
           </th>
         </tr>
-        {
-          showDetails ? (
-            <tr>
-              <th className=" px-20 py-4">Handle</th>
-              <th className=" px-5 ">Rating</th>
-              <th className=" px-5 ">Contests Attended</th>
-              <th className=" px-20 ">Handle</th>
-              <th className=" px-5 ">Contest Score</th>
-              <th className=" px-5 ">Practice Score</th>
-              <th className=" px-5 ">Contests Attended</th>
-              <th className=" px-20 ">Handle</th>
-              <th className=" px-5 ">Rating</th>
-              <th className=" px-5 ">Contests Attended</th>
-              <th className=" px-20 ">Handle</th>
-              <th className=" px-5 ">Rating</th>
-              <th className=" px-5 ">Contests Attended</th>
-              <th className=" px-20 ">Handle</th>
-              <th className=" px-5 ">Practice Score</th>
-            </tr>
-          ) : null
-        }
+        {showDetails ? (
+          <tr>
+            <th className=" px-20 py-4">Handle</th>
+            <th className=" px-5 ">Rating</th>
+            <th className=" px-5 ">Contests Attended</th>
+            <th className=" px-20 ">Handle</th>
+            <th className=" px-5 ">Contest Score</th>
+            <th className=" px-5 ">Practice Score</th>
+            <th className=" px-5 ">Contests Attended</th>
+            <th className=" px-20 ">Handle</th>
+            <th className=" px-5 ">Rating</th>
+            <th className=" px-5 ">Contests Attended</th>
+            <th className=" px-20 ">Handle</th>
+            <th className=" px-5 ">Rating</th>
+            <th className=" px-5 ">Contests Attended</th>
+            <th className=" px-20 ">Handle</th>
+            <th className=" px-5 ">Practice Score</th>
+          </tr>
+        ) : null}
       </thead>
     </>
   );

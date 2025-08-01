@@ -1,10 +1,13 @@
+import { Routes, Route, Navigate } from "react-router-dom";
 import LeaderBoardOutline from "./components/LeaderBoardOutline";
-import StudentData from "./components/StudentData";
 
 const App = () => {
   return (
     <div>
-        <LeaderBoardOutline/>
+      <Routes>
+        <Route path="/:batch" element={<LeaderBoardOutline />} />
+        <Route path="/" element={<Navigate to="/2026" replace />} />
+      </Routes>
     </div>
   );
 };

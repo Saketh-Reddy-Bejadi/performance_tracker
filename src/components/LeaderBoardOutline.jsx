@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Attributes from "./Attributes";
 import StudentData from "./StudentData";
 import {
@@ -8,6 +9,8 @@ import {
 } from "../services/api";
 
 const LeaderBoardOutline = () => {
+  const { batch } = useParams();
+  const navigate = useNavigate();
   const [showDetails, setShowDetails] = useState(true);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,18 +25,15 @@ const LeaderBoardOutline = () => {
         setLoading(true);
         setError(null);
 
-        // Fetch users and scraping stats in parallel
         const [users, stats] = await Promise.all([
-          fetchUsers(),
-          fetchScrapingStats(),
+          fetchUsers(batch),
+          fetchScrapingStats(batch),
         ]);
 
         let transformedData = transformUserData(users);
-        // Sort by percentile (descending)
         transformedData = transformedData.sort(
           (a, b) => parseFloat(b.percentile) - parseFloat(a.percentile)
         );
-        // Assign fixed serial number (rank) based on sorted order
         transformedData = transformedData.map((user, idx) => ({
           ...user,
           serial: idx + 1,
@@ -50,7 +50,7 @@ const LeaderBoardOutline = () => {
     };
 
     loadData();
-  }, []);
+  }, [batch]);
 
   const filterData = (row) => {
     if (!search.trim()) return true;
@@ -113,7 +113,9 @@ const LeaderBoardOutline = () => {
               </button>
             </div>
             <p className="text-zinc-300 mb-4">
-              The data displayed on this leaderboard may not always be accurate, as the platform is still under development. Scores and values shown here could be incorrect or incomplete.
+              The data displayed on this leaderboard may not always be accurate,
+              as the platform is still under development. Scores and values
+              shown here could be incorrect or incomplete.
             </p>
             <div className="flex justify-end">
               <button
@@ -131,11 +133,21 @@ const LeaderBoardOutline = () => {
         {/* Mobile Layout */}
         <div className="md:hidden p-4 bg-black border-b border-zinc-800">
           <div className="flex flex-col space-y-4">
-            {scrapingStats && (
-              <div className="text-zinc-400 text-md text-center">
-                Last updated: {formatTimestamp(scrapingStats.lastScraped)}
-              </div>
-            )}
+            <div className="flex flex-row items-center">
+              <select
+                value={batch}
+                onChange={(e) => navigate(`/${e.target.value}`)}
+                className="w-36 px-3 py-2 rounded bg-zinc-950 text-white border border-zinc-700 outline-none"
+              >
+                <option value="2026">2026 Batch</option>
+                <option value="2027">2027 Batch</option>
+              </select>
+              {scrapingStats && (
+                <div className="text-zinc-400 text-md text-right flex-1">
+                  Last updated: {new Date(scrapingStats.lastScraped).toLocaleDateString()}
+                </div>
+              )}
+            </div>
             <input
               type="text"
               className="w-full p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none"
@@ -149,22 +161,32 @@ const LeaderBoardOutline = () => {
         {/* Desktop/Tablet Layout */}
         <div className="hidden md:flex p-4 bg-black border-b border-zinc-800">
           <div className="flex justify-between items-center w-full">
-            <input
-              type="text"
-              className="flex-1 p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none mr-4"
-              placeholder="Search by roll number or any handle..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <div className="flex items-center gap-4 flex-1">
+              <select
+                value={batch}
+                onChange={(e) => navigate(`/${e.target.value}`)}
+                className="px-3 py-2 rounded bg-zinc-950 text-white border border-zinc-700/40 outline-none"
+              >
+                <option value="2026">2026 Batch</option>
+                <option value="2027">2027 Batch</option>
+              </select>
+              <input
+                type="text"
+                className="p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none flex-1"
+                placeholder="Search by roll number or any handle..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
             {scrapingStats && (
-              <div className="text-zinc-400 text-md">
+              <div className="text-zinc-400 text-md ml-4 whitespace-nowrap">
                 Last updated: {formatTimestamp(scrapingStats.lastScraped)}
               </div>
             )}
           </div>
         </div>
 
-        <div className="max-h-screen text-black overflow-y-auto border border-zinc-800">
+        <div className="max-h-[calc(100vh-80px)] text-black overflow-y-auto border border-zinc-800">
           <table className="min-w-full table-auto border border-zinc-800 text-white">
             <Attributes
               showDetails={showDetails}

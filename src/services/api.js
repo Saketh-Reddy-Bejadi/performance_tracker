@@ -1,11 +1,14 @@
-export const fetchUsers = async () => {
+export const fetchUsers = async (batch) => {
   try {
     const token = import.meta.env.VITE_TOKEN;
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/users/${batch}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -17,11 +20,11 @@ export const fetchUsers = async () => {
   }
 };
 
-export const fetchScrapingStats = async () => {
+export const fetchScrapingStats = async (batch) => {
   try {
     const token = import.meta.env.VITE_TOKEN;
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/scraping/stats`,
+      `${import.meta.env.VITE_API_BASE_URL}/scraping/stats/${batch}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -49,8 +52,12 @@ export const transformUserData = (users) => {
     },
     gfg: {
       handle: user.GeeksForGeeksHandle?.handle || "",
-      contestScore: Number((user.GeeksForGeeksHandle?.contestRating || 0).toFixed(2)),
-      practiceScore: Number((user.GeeksForGeeksHandle?.codingScore || 0).toFixed(2)),
+      contestScore: Number(
+        (user.GeeksForGeeksHandle?.contestRating || 0).toFixed(2)
+      ),
+      practiceScore: Number(
+        (user.GeeksForGeeksHandle?.codingScore || 0).toFixed(2)
+      ),
       count: user.GeeksForGeeksHandle?.contestsAttended || 0,
     },
     leetcode: {
