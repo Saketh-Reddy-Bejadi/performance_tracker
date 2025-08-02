@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Attributes from "./Attributes";
 import StudentData from "./StudentData";
@@ -16,8 +16,18 @@ const LeaderBoardOutline = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [scrapingStats, setScrapingStats] = useState(null);
   const [showDevNotice, setShowDevNotice] = useState(true);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -52,18 +62,32 @@ const LeaderBoardOutline = () => {
     loadData();
   }, [batch]);
 
-  const filterData = (row) => {
-    if (!search.trim()) return true;
-    const q = search.trim().toLowerCase();
-    return (
-      row.rollNumber.toLowerCase().includes(q) ||
-      row.codeforces.handle.toLowerCase().includes(q) ||
-      row.gfg.handle.toLowerCase().includes(q) ||
-      row.leetcode.handle.toLowerCase().includes(q) ||
-      row.codechef.handle.toLowerCase().includes(q) ||
-      row.hackerRank.handle.toLowerCase().includes(q)
-    );
-  };
+  // Memoized filtered data
+  const filteredData = useMemo(() => {
+    if (!debouncedSearch.trim()) return data;
+
+    const q = debouncedSearch.trim().toLowerCase();
+    return data.filter((row) => {
+      // Create a single searchable string for better performance
+      const searchableText = [
+        row.rollNumber,
+        row.codeforces.handle,
+        row.gfg.handle,
+        row.leetcode.handle,
+        row.codechef.handle,
+        row.hackerRank.handle,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(q);
+    });
+  }, [data, debouncedSearch]);
+
+  // Optimized search handler
+  const handleSearchChange = useCallback((e) => {
+    setSearch(e.target.value);
+  }, []);
 
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return "N/A";
@@ -144,7 +168,15 @@ const LeaderBoardOutline = () => {
               </select>
               {scrapingStats && (
                 <div className="text-zinc-400 text-md text-right flex-1">
-                  Last updated: {new Date(scrapingStats.lastScraped).toLocaleDateString()}
+                  Last updated:{" "}
+                  {(() => {
+                    const d = new Date(scrapingStats.lastScraped);
+                    return `${d.getDate().toString().padStart(2, "0")}/${(
+                      d.getMonth() + 1
+                    )
+                      .toString()
+                      .padStart(2, "0")}/${d.getFullYear()}`;
+                  })()}
                 </div>
               )}
             </div>
@@ -153,7 +185,7 @@ const LeaderBoardOutline = () => {
               className="w-full p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none"
               placeholder="Search by roll number or any handle..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={handleSearchChange}
             />
           </div>
         </div>
@@ -175,7 +207,7 @@ const LeaderBoardOutline = () => {
                 className="p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none flex-1"
                 placeholder="Search by roll number or any handle..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={handleSearchChange}
               />
             </div>
             {scrapingStats && (
@@ -193,7 +225,7 @@ const LeaderBoardOutline = () => {
               setShowDetails={setShowDetails}
             />
             <StudentData
-              data={data.filter(filterData)}
+              data={filteredData}
               showDetails={showDetails}
               setShowDetails={setShowDetails}
               showSerialNumber={true}
