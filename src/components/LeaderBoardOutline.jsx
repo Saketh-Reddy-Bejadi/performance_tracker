@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Attributes from "./Attributes";
 import StudentData from "./StudentData";
+import SkeletonLoader from "./SkeletonLoader";
 import {
   fetchUsers,
   transformUserData,
@@ -18,7 +19,6 @@ const LeaderBoardOutline = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [scrapingStats, setScrapingStats] = useState(null);
-  const [showDevNotice, setShowDevNotice] = useState(true);
 
   // Debounce search input
   useEffect(() => {
@@ -105,9 +105,69 @@ const LeaderBoardOutline = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-white text-xl">Loading...</div>
-      </div>
+      <>
+        <div className="overflow-hidden">
+          {/* Mobile Layout */}
+          <div className="md:hidden p-4 bg-black border-b border-zinc-800">
+            <div className="flex flex-col space-y-4">
+              <div className="text-zinc-400 text-md text-center">
+                <div className="h-4 w-32 bg-zinc-700 rounded mx-auto animate-pulse"></div>
+              </div>
+              <select
+                value={batch}
+                onChange={(e) => navigate(`/${e.target.value}`)}
+                className="w-full p-2 rounded bg-zinc-900 text-white border border-zinc-700 outline-none"
+              >
+                <option value="2026">2026 Batch</option>
+                <option value="2027">2027 Batch</option>
+              </select>
+              <input
+                type="text"
+                className="w-full p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none"
+                placeholder="Search by roll number or any handle..."
+                value={search}
+                onChange={handleSearchChange}
+              />
+            </div>
+          </div>
+
+          {/* Desktop/Tablet Layout */}
+          <div className="hidden md:flex p-4 bg-black border-b border-zinc-800">
+            <div className="flex justify-between items-center w-full">
+              <div className="flex items-center gap-4 flex-1">
+                <select
+                  value={batch}
+                  onChange={(e) => navigate(`/${e.target.value}`)}
+                  className="px-3 py-2 rounded bg-zinc-900/50 text-white border border-zinc-700/40 outline-none"
+                >
+                  <option value="2026">2026 Batch</option>
+                  <option value="2027">2027 Batch</option>
+                </select>
+                <input
+                  type="text"
+                  className="p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none flex-1"
+                  placeholder="Search by roll number or any handle..."
+                  value={search}
+                  onChange={handleSearchChange}
+                />
+              </div>
+              <div className="text-zinc-400 text-md ml-4 whitespace-nowrap">
+                <div className="h-4 w-32 bg-zinc-700 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="max-h-[calc(100vh-80px)] text-black overflow-y-auto border border-zinc-800">
+            <table className="min-w-full table-auto border border-zinc-800 text-white">
+              <Attributes
+                showDetails={showDetails}
+                setShowDetails={setShowDetails}
+              />
+              <SkeletonLoader showDetails={showDetails} />
+            </table>
+          </div>
+        </div>
+      </>
     );
   }
 
@@ -121,38 +181,6 @@ const LeaderBoardOutline = () => {
 
   return (
     <>
-      {/* Development Notice Popup */}
-      {showDevNotice && (
-        <div className="fixed inset-0 bg-black/60 bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-6 max-w-md w-full">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-yellow-400 text-lg font-semibold">
-                🚧 Development Notice
-              </h3>
-              <button
-                onClick={() => setShowDevNotice(false)}
-                className="text-zinc-400 hover:text-white transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-            <p className="text-zinc-300 mb-4">
-              The data displayed on this leaderboard may not always be accurate,
-              as the platform is still under development. Scores and values
-              shown here could be incorrect or incomplete.
-            </p>
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowDevNotice(false)}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded transition-colors"
-              >
-                Got it
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="overflow-hidden">
         {/* Mobile Layout */}
         <div className="md:hidden p-4 bg-black border-b border-zinc-800">
