@@ -8,6 +8,7 @@ import {
   transformUserData,
   fetchScrapingStats,
 } from "../services/api";
+import FeedbackPopup from "./FeedbackPopup";
 
 const LeaderBoardOutline = () => {
   const { batch } = useParams();
@@ -19,6 +20,7 @@ const LeaderBoardOutline = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [scrapingStats, setScrapingStats] = useState(null);
+  const [showFeedbackPopup, setShowFeedbackPopup] = useState(true);
 
   // Debounce search input
   useEffect(() => {
@@ -106,6 +108,10 @@ const LeaderBoardOutline = () => {
   if (loading) {
     return (
       <>
+        <FeedbackPopup
+          showFeedbackPopup={showFeedbackPopup}
+          setShowFeedbackPopup={setShowFeedbackPopup}
+        />
         <div className="overflow-hidden">
           {/* Mobile Layout */}
           <div className="md:hidden p-4 bg-black border-b border-zinc-800">
@@ -181,6 +187,10 @@ const LeaderBoardOutline = () => {
 
   return (
     <>
+      <FeedbackPopup
+        showFeedbackPopup={showFeedbackPopup}
+        setShowFeedbackPopup={setShowFeedbackPopup}
+      />
       <div className="overflow-hidden">
         {/* Mobile Layout */}
         <div className="md:hidden p-4 bg-black border-b border-zinc-800">
