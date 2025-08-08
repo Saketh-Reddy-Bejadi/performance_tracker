@@ -1,19 +1,16 @@
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: {
+    Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`,
+  },
+});
+
 export const fetchUsers = async (batch) => {
   try {
-    const token = import.meta.env.VITE_TOKEN;
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/users/${batch}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data.users || [];
+    const response = await api.get(`/api/users/${batch}`);
+    return response.data.users || [];
   } catch (error) {
     console.error("Error fetching users:", error);
     throw error;
@@ -22,25 +19,17 @@ export const fetchUsers = async (batch) => {
 
 export const fetchScrapingStats = async (batch) => {
   try {
-    const token = import.meta.env.VITE_TOKEN;
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/scraping/stats/${batch}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
+    const response = await api.get(`/api/scraping/stats/${batch}`);
+    return response.data;
   } catch (error) {
     console.error("Error fetching scraping stats:", error);
     throw error;
   }
 };
+
+export const sendOtp = (batch, email) => api.post(`/api/users/${batch}/send-otp`, { email });
+export const verifyOtp = (batch, email, otp) => api.post(`/api/users/${batch}/verify-otp`, { email, otp });
+export const updateHandles = (batch, email, handles) => api.post(`/api/users/${batch}/update-handles`, { email, handles });
 
 export const transformUserData = (users) => {
   return users.map((user) => ({
