@@ -13,6 +13,8 @@ const HandleUpdate = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [initialHandles, setInitialHandles] = useState(null);
+  const [isChanged, setIsChanged] = useState(false);
 
   const handleSendOtp = async () => {
     if (!batch) {
@@ -46,6 +48,7 @@ const HandleUpdate = () => {
     try {
       const response = await verifyOtp(batch, email, otp);
       setHandles(response.data);
+      setInitialHandles(response.data);
       setStep('handles');
     } catch (err) {
       setError(err.response?.data?.error || 'The OTP is invalid or has expired. Please request a new one.');
@@ -71,10 +74,12 @@ const HandleUpdate = () => {
 
   const handleHandleChange = (e) => {
     const { name, value } = e.target;
-    setHandles((prevHandles) => ({
-      ...prevHandles,
+    const updatedHandles = {
+      ...handles,
       [name]: value,
-    }));
+    };
+    setHandles(updatedHandles);
+    setIsChanged(JSON.stringify(updatedHandles) !== JSON.stringify(initialHandles));
   };
 
   return (
@@ -164,7 +169,7 @@ const HandleUpdate = () => {
             ))}
             <button
               onClick={handleUpdateHandles}
-              disabled={loading}
+              disabled={loading || !isChanged}
               className="w-full mt-4 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:bg-gray-800"
             >
               {loading ? 'Saving...' : 'Save Changes'}
