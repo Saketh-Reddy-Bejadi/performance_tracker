@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -27,9 +27,14 @@ export const fetchScrapingStats = async (batch) => {
   }
 };
 
-export const sendOtp = (batch, email) => api.post(`/api/users/${batch}/send-otp`, { email });
-export const verifyOtp = (batch, email, otp) => api.post(`/api/users/${batch}/verify-otp`, { email, otp });
-export const updateHandles = (batch, email, handles) => api.post(`/api/users/${batch}/update-handles`, { email, handles });
+export const sendOtp = (batch, email) =>
+  api.post(`/api/users/${batch}/send-otp`, { email });
+export const verifyOtp = (batch, email, otp) =>
+  api.post(`/api/users/${batch}/verify-otp`, { email, otp });
+export const updateHandles = (batch, email, handles) =>
+  api.post(`/api/users/${batch}/update-handles`, { email, handles });
+export const verifyToken = (token, batch) =>
+  api.post("/api/verify-token", { token, batch });
 
 export const transformUserData = (users) => {
   return users.map((user) => ({

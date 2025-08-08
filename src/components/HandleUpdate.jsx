@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { sendOtp, verifyOtp, updateHandles } from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { sendOtp, verifyOtp, updateHandles, verifyToken } from '../services/api';
+
 
 const HandleUpdate = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [batch, setBatch] = useState('');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -15,6 +17,37 @@ const HandleUpdate = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [initialHandles, setInitialHandles] = useState(null);
   const [isChanged, setIsChanged] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const token = queryParams.get('token');
+    const batch=queryParams.get('batch');
+
+    const checkToken = async () => {
+      if (token && batch) {
+        try {
+          const response = await verifyToken(token,batch);
+          if (response.data.isValid) {
+            setIsAuthorized(true);
+          } else {
+            setIsAuthorized(false);
+          }
+        } catch (err) {
+          setIsAuthorized(false);
+          setError(err.response?.data?.error || 'You are not authorized to access this service.');
+        }
+      } else {
+        setIsAuthorized(false);
+        setError('You are not authorized to access this service.');
+      }
+      setAuthLoading(false);
+    };
+
+    checkToken();
+  }, [location.search]);
+
 
   const handleSendOtp = async () => {
     if (!batch) {
@@ -81,6 +114,14 @@ const HandleUpdate = () => {
     setHandles(updatedHandles);
     setIsChanged(JSON.stringify(updatedHandles) !== JSON.stringify(initialHandles));
   };
+
+  if (authLoading) {
+    return <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 text-white">Loading authorization...</div>;
+  }
+
+  if (!isAuthorized) {
+    return <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 text-white text-center text-lg">Unauthorized: {error}</div>;
+  }
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
