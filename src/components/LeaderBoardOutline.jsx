@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams} from "react-router-dom";
 import Attributes from "./Attributes";
 import StudentData from "./StudentData";
 import SkeletonLoader from "./SkeletonLoader";
@@ -8,11 +8,9 @@ import {
   transformUserData,
   fetchScrapingStats,
 } from "../services/api";
-import FeedbackPopup from "./FeedbackPopup";
 
 const LeaderBoardOutline = () => {
   const { batch } = useParams();
-  const navigate = useNavigate();
   const [showDetails, setShowDetails] = useState(true);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +18,6 @@ const LeaderBoardOutline = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [scrapingStats, setScrapingStats] = useState(null);
-  const [showFeedbackPopup, setShowFeedbackPopup] = useState(true);
 
   // Debounce search input
   useEffect(() => {
@@ -108,10 +105,6 @@ const LeaderBoardOutline = () => {
   if (loading) {
     return (
       <>
-        <FeedbackPopup
-          showFeedbackPopup={showFeedbackPopup}
-          setShowFeedbackPopup={setShowFeedbackPopup}
-        />
         <div className="overflow-hidden">
           {/* Mobile Layout */}
           <div className="md:hidden p-4 bg-black border-b border-zinc-800">
@@ -119,14 +112,6 @@ const LeaderBoardOutline = () => {
               <div className="text-zinc-400 text-md text-center">
                 <div className="h-4 w-32 bg-zinc-700 rounded mx-auto animate-pulse"></div>
               </div>
-              <select
-                value={batch}
-                onChange={(e) => navigate(`/${e.target.value}`)}
-                className="w-full p-2 rounded bg-zinc-900 text-white border border-zinc-700 outline-none"
-              >
-                <option value="2026">2026 Batch</option>
-                <option value="2027">2027 Batch</option>
-              </select>
               <input
                 type="text"
                 className="w-full p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none"
@@ -141,14 +126,7 @@ const LeaderBoardOutline = () => {
           <div className="hidden md:flex p-4 bg-black border-b border-zinc-800">
             <div className="flex justify-between items-center w-full">
               <div className="flex items-center gap-4 flex-1">
-                <select
-                  value={batch}
-                  onChange={(e) => navigate(`/${e.target.value}`)}
-                  className="px-3 py-2 rounded bg-zinc-900/50 text-white border border-zinc-700/40 outline-none"
-                >
-                  <option value="2026">2026 Batch</option>
-                  <option value="2027">2027 Batch</option>
-                </select>
+                
                 <input
                   type="text"
                   className="p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none flex-1"
@@ -187,25 +165,14 @@ const LeaderBoardOutline = () => {
 
   return (
     <>
-      <FeedbackPopup
-        showFeedbackPopup={showFeedbackPopup}
-        setShowFeedbackPopup={setShowFeedbackPopup}
-      />
       <div className="overflow-hidden">
         {/* Mobile Layout */}
         <div className="md:hidden p-4 bg-black border-b border-zinc-800">
           <div className="flex flex-col space-y-4">
-            <div className="flex flex-row items-center">
-              <select
-                value={batch}
-                onChange={(e) => navigate(`/${e.target.value}`)}
-                className="w-36 px-3 py-2 rounded bg-zinc-950 text-white border border-zinc-700 outline-none"
-              >
-                <option value="2026">2026 Batch</option>
-                <option value="2027">2027 Batch</option>
-              </select>
+            <div className="flex flex-row items-center justify-center">
+             
               {scrapingStats && (
-                <div className="text-zinc-400 text-md text-right flex-1">
+                <div className="text-zinc-400 text-md">
                   Last updated:{" "}
                   {(() => {
                     const d = new Date(scrapingStats.lastScraped);
@@ -232,14 +199,7 @@ const LeaderBoardOutline = () => {
         <div className="hidden md:flex p-4 bg-black border-b border-zinc-800">
           <div className="flex justify-between items-center w-full">
             <div className="flex items-center gap-4 flex-1">
-              <select
-                value={batch}
-                onChange={(e) => navigate(`/${e.target.value}`)}
-                className="px-3 py-2 rounded bg-zinc-950 text-white border border-zinc-700/40 outline-none"
-              >
-                <option value="2026">2026 Batch</option>
-                <option value="2027">2027 Batch</option>
-              </select>
+             
               <input
                 type="text"
                 className="p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none flex-1"
