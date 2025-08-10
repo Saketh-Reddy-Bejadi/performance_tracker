@@ -7,7 +7,6 @@ const Footer = () => {
   return (
     <footer className="bg-zinc-950 text-gray-300">
       <div className="w-full py-6 px-6 xl:px-20 flex flex-col xl:flex-row items-center justify-between gap-6">
-        
         <Link
           to={"https://github.com/Saketh-Reddy-Bejadi/performance_tracker"}
           target="_blank"
@@ -50,7 +49,7 @@ const Footer = () => {
 
       <div className="border-t border-zinc-800 py-4 text-center text-sm text-gray-500">
         © {new Date().getFullYear()}{" "}
-        <span className="font-semibold text-gray-300">Tracker-CMRIT</span>. All
+        <span className="font-semibold text-gray-300">CodeTrackr</span>. All
         rights reserved.
       </div>
     </footer>
