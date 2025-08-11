@@ -20,7 +20,7 @@ const Hero = () => {
         <nav className="w-full max-w-6xl xl:h-15 h-12 backdrop-blur-sm bg-black/30 border border-zinc-800 flex items-center p-5 rounded-2xl justify-between fixed top-5">
           <h1 className="text-xl font-bold tracking-wider">CodeTrackr</h1>
           <Link to={"/update-handles"}>
-            <button className="cursor-pointer bg-zinc-900 px-5 py-2 rounded-lg hover:bg-zinc-800 transition-colors duration-300">
+            <button className="cursor-pointer bg-zinc-900 px-5 xl:py-2 py-1 rounded-lg hover:bg-zinc-950 transition-all duration-300 border border-zinc-800">
               <span className="hidden sm:inline">Update Username</span>
               <span className="inline sm:hidden text-sm">Update</span>
             </button>
@@ -31,7 +31,7 @@ const Hero = () => {
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-400">
             Track. Compete. Conquer.
           </h1>
-          <p className="mt-4 text-lg md:text-xl text-zinc-300 max-w-3xl">
+          <p className="mt-4 text-md md:text-xl text-zinc-300 max-w-3xl">
             Your unified leaderboard for competitive programming. We scrape and sync your scores from top platforms, so you can focus on climbing the ranks.
           </p>
           
@@ -44,12 +44,12 @@ const Hero = () => {
           </div>
 
           <div className="mt-10">
-            <h2 className="text-2xl font-semibold mb-5">View Leaderboards</h2>
+            <h2 className="xl:text-2xl text-lg font-semibold mb-5">View Leaderboards</h2>
             <div className="flex gap-5 flex-wrap justify-center">
               {["2026", "2027"].map((batch) => (
                 <Link to={`/${batch}`} key={batch}>
                   <ShimmerButton className="shadow-2xl">
-                    <span className="whitespace-pre-wrap text-center text-lg font-medium leading-none tracking-tight text-white px-8 py-3">
+                    <span className="whitespace-pre-wrap text-center xl:text-lg text-md font-medium leading-none tracking-tight text-white xl:px-5 xl:py-1">
                       Batch {batch}
                     </span>
                   </ShimmerButton>
