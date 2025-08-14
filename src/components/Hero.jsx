@@ -18,7 +18,10 @@ const Hero = () => {
       />
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-5">
         <nav className="w-full max-w-6xl xl:h-15 h-12 backdrop-blur-sm bg-black/30 border border-zinc-800 flex items-center p-5 rounded-2xl justify-between fixed top-5">
-          <h1 className="text-xl font-bold tracking-wider">CodeTrackr</h1>
+          <Link className="flex items-center-safe" >
+            <img src="/Codetrackr.svg" className="xl:h-12 h-10"/>
+            <h1 className="text-xl font-semibold tracking-wider xl:py-4">CodeTrackr</h1>
+          </Link>
           <Link to={"/update-handles"}>
             <button className="cursor-pointer bg-zinc-900 px-5 xl:py-2 py-1 rounded-lg hover:bg-zinc-950 transition-all duration-300 border border-zinc-800">
               <span className="hidden sm:inline">Update Username</span>
@@ -32,19 +35,43 @@ const Hero = () => {
             Track. Compete. Conquer.
           </h1>
           <p className="mt-4 text-md md:text-xl text-zinc-300 max-w-3xl">
-            Your unified leaderboard for competitive programming. We scrape and sync your scores from top platforms, so you can focus on climbing the ranks.
+            Your unified leaderboard for competitive programming. We scrape and
+            sync your scores from top platforms, so you can focus on climbing
+            the ranks.
           </p>
-          
+
           <div className="flex items-center justify-center space-x-6 mt-8">
-            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/leetcode.svg" alt="LeetCode" className="h-8 w-8 invert" />
-            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/codeforces.svg" alt="Codeforces" className="h-8 w-8 invert" />
-            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/codechef.svg" alt="CodeChef" className="h-8 w-8 invert" />
-            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/hackerrank.svg" alt="HackerRank" className="h-8 w-8 invert" />
-            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/geeksforgeeks.svg" alt="GeeksforGeeks" className="h-8 w-8 invert" />
+            <img
+              src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/leetcode.svg"
+              alt="LeetCode"
+              className="h-8 w-8 invert"
+            />
+            <img
+              src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/codeforces.svg"
+              alt="Codeforces"
+              className="h-8 w-8 invert"
+            />
+            <img
+              src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/codechef.svg"
+              alt="CodeChef"
+              className="h-8 w-8 invert"
+            />
+            <img
+              src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/hackerrank.svg"
+              alt="HackerRank"
+              className="h-8 w-8 invert"
+            />
+            <img
+              src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/geeksforgeeks.svg"
+              alt="GeeksforGeeks"
+              className="h-8 w-8 invert"
+            />
           </div>
 
           <div className="mt-10">
-            <h2 className="xl:text-2xl text-lg font-semibold mb-5">View Leaderboards</h2>
+            <h2 className="xl:text-2xl text-lg font-semibold mb-5">
+              View Leaderboards
+            </h2>
             <div className="flex gap-5 flex-wrap justify-center">
               {["2026", "2027"].map((batch) => (
                 <Link to={`/${batch}`} key={batch}>
