@@ -33,8 +33,6 @@ export const verifyOtp = (batch, email, otp) =>
   api.post(`/api/users/${batch}/verify-otp`, { email, otp });
 export const updateHandles = (batch, email, handles) =>
   api.post(`/api/users/${batch}/update-handles`, { email, handles });
-export const verifyToken = (token, batch) =>
-  api.post("/api/verify-token", { token, batch });
 
 export const transformUserData = (users) => {
   return users.map((user) => ({

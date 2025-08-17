@@ -1,70 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { sendOtp, verifyOtp, updateHandles, verifyToken } from '../services/api';
-
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { sendOtp, verifyOtp, updateHandles } from "../services/api";
 
 const HandleUpdate = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [batch, setBatch] = useState('');
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
+  const [batch, setBatch] = useState("");
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
   const [handles, setHandles] = useState(null);
-  const [step, setStep] = useState('email'); // email, otp, handles
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
+  const [step, setStep] = useState("email"); // email, otp, handles
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [initialHandles, setInitialHandles] = useState(null);
   const [isChanged, setIsChanged] = useState(false);
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true);
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const token = queryParams.get('token');
-    const batch=queryParams.get('batch');
-
-    const checkToken = async () => {
-      if (token && batch) {
-        try {
-          const response = await verifyToken(token,batch);
-          if (response.data.isValid) {
-            setIsAuthorized(true);
-          } else {
-            setIsAuthorized(false);
-          }
-        } catch (err) {
-          setIsAuthorized(false);
-          setError(err.response?.data?.error || 'You are not authorized to access this service.');
-        }
-      } else {
-        setIsAuthorized(false);
-        setError('You are not authorized to access this service.');
-      }
-      setAuthLoading(false);
-    };
-
-    checkToken();
-  }, [location.search]);
-
 
   const handleSendOtp = async () => {
     if (!batch) {
-      setError('Please select a valid batch.');
+      setError("Please select a valid batch.");
       return;
     }
-    if (!email.endsWith('@cmrithyderabad.edu.in')) {
-      setError('Please enter a valid @cmrithyderabad.edu.in email address.');
+    if (!email.endsWith("@cmrithyderabad.edu.in")) {
+      setError("Please enter a valid @cmrithyderabad.edu.in email address.");
       return;
     }
     setLoading(true);
-    setError('');
-    setMessage('');
+    setError("");
+    setMessage("");
     try {
       const response = await sendOtp(batch, email);
       setMessage(response.data.message);
-      setStep('otp');
+      setStep("otp");
       setOtpSent(true);
       setTimeout(() => setOtpSent(false), 60000); // 60 second cooldown
     } catch (err) {
@@ -76,23 +43,26 @@ const HandleUpdate = () => {
 
   const handleVerifyOtp = async () => {
     setLoading(true);
-    setError('');
-    setMessage('');
+    setError("");
+    setMessage("");
     try {
       const response = await verifyOtp(batch, email, otp);
       setHandles(response.data);
       setInitialHandles(response.data);
-      setStep('handles');
+      setStep("handles");
     } catch (err) {
-      setError(err.response?.data?.error || 'The OTP is invalid or has expired. Please request a new one.');
+      setError(
+        err.response?.data?.error ||
+          "The OTP is invalid or has expired. Please request a new one."
+      );
     }
     setLoading(false);
   };
 
   const handleUpdateHandles = async () => {
     setLoading(true);
-    setError('');
-    setMessage('');
+    setError("");
+    setMessage("");
     try {
       const response = await updateHandles(batch, email, handles);
       setMessage(response.data.message);
@@ -100,7 +70,7 @@ const HandleUpdate = () => {
         navigate(`/${batch}`);
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.error || 'An unexpected error occurred.');
+      setError(err.response?.data?.error || "An unexpected error occurred.");
     }
     setLoading(false);
   };
@@ -112,27 +82,26 @@ const HandleUpdate = () => {
       [name]: value,
     };
     setHandles(updatedHandles);
-    setIsChanged(JSON.stringify(updatedHandles) !== JSON.stringify(initialHandles));
+    setIsChanged(
+      JSON.stringify(updatedHandles) !== JSON.stringify(initialHandles)
+    );
   };
-
-  if (authLoading) {
-    return <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 text-white">Loading authorization...</div>;
-  }
-
-  if (!isAuthorized) {
-    return <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 text-white text-center text-lg">Unauthorized: {error}</div>;
-  }
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div className="bg-black border border-zinc-800 rounded-lg p-6 max-w-lg w-full">
-        <h2 className="text-white text-lg font-semibold mb-6 text-center">Update Your Handles</h2>
+        <h2 className="text-white text-lg font-semibold mb-6 text-center">
+          Update Your Handles
+        </h2>
         {error && <p className="text-gray-300 text-center mb-4">{error}</p>}
         {message && <p className="text-gray-300 text-center mb-4">{message}</p>}
 
-        {step === 'email' && (
+        {step === "email" && (
           <div>
-            <label htmlFor="batch" className="block text-sm font-medium text-zinc-400">
+            <label
+              htmlFor="batch"
+              className="block text-sm font-medium text-zinc-400"
+            >
               Batch
             </label>
             <select
@@ -142,12 +111,13 @@ const HandleUpdate = () => {
               className="mt-1 block w-full px-3 py-2 border bg-black border-zinc-800 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm text-zinc-300"
             >
               <option value="">Select Batch</option>
-              <option value="2025">2025</option>
               <option value="2026">2026</option>
               <option value="2027">2027</option>
-              <option value="2028">2028</option>
             </select>
-            <label htmlFor="email" className="block text-sm font-medium text-zinc-400 mt-4">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-zinc-400 mt-4"
+            >
               College Email Address
             </label>
             <input
@@ -161,16 +131,23 @@ const HandleUpdate = () => {
             <button
               onClick={handleSendOtp}
               disabled={loading || otpSent}
-              className="w-full mt-4 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:bg-gray-800"
+              className="w-full mt-4 flex justify-center py-2 px-4 border border-zinc-700/50 rounded-md shadow-sm text-sm font-medium text-white bg-zinc-900 hover:bg-zinc-950 transition-all duration-500"
             >
-              {loading ? 'Sending...' : otpSent ? 'Resend OTP in 60s' : 'Send OTP'}
+              {loading
+                ? "Sending..."
+                : otpSent
+                ? "Resend OTP in 60s"
+                : "Send OTP"}
             </button>
           </div>
         )}
 
-        {step === 'otp' && (
+        {step === "otp" && (
           <div>
-            <label htmlFor="otp" className="block text-sm font-medium text-zinc-400">
+            <label
+              htmlFor="otp"
+              className="block text-sm font-medium text-zinc-400"
+            >
               Enter 6-Digit OTP
             </label>
             <input
@@ -184,19 +161,22 @@ const HandleUpdate = () => {
             <button
               onClick={handleVerifyOtp}
               disabled={loading}
-              className="w-full mt-4 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:bg-gray-800"
+              className="w-full mt-4 flex justify-center py-2 px-4 border border-zinc-700/50 rounded-md shadow-sm text-sm font-medium text-white bg-zinc-900 hover:bg-zinc-950 transition-all duration-500"
             >
-              {loading ? 'Verifying...' : 'Verify OTP'}
+              {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </div>
         )}
 
-        {step === 'handles' && handles && (
+        {step === "handles" && handles && (
           <div>
             {Object.keys(handles).map((handleKey) => (
               <div key={handleKey} className="mb-4">
-                <label htmlFor={handleKey} className="block text-sm font-medium text-zinc-400">
-                  {handleKey.replace('Handle', '')}
+                <label
+                  htmlFor={handleKey}
+                  className="block text-sm font-medium text-zinc-400"
+                >
+                  {handleKey.replace("Handle", "")}
                 </label>
                 <input
                   type="text"
@@ -211,9 +191,14 @@ const HandleUpdate = () => {
             <button
               onClick={handleUpdateHandles}
               disabled={loading || !isChanged}
-              className="w-full mt-4 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:bg-gray-800"
+              className={`w-full mt-4 flex justify-center py-2 px-4 border border-zinc-700/50 rounded-md shadow-sm text-sm font-medium transition-all duration-500
+    ${
+      loading || !isChanged
+        ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+        : "bg-zinc-900 text-white hover:bg-zinc-950 cursor-pointer"
+    }`}
             >
-              {loading ? 'Saving...' : 'Save Changes'}
+              {loading ? "Saving..." : "Save Changes"}
             </button>
           </div>
         )}
@@ -223,4 +208,3 @@ const HandleUpdate = () => {
 };
 
 export default HandleUpdate;
-
