@@ -40,34 +40,6 @@ const Hero = () => {
             the ranks.
           </p>
 
-          <div className="flex items-center justify-center space-x-6 mt-8">
-            <img
-              src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/leetcode.svg"
-              alt="LeetCode"
-              className="h-8 w-8 invert"
-            />
-            <img
-              src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/codeforces.svg"
-              alt="Codeforces"
-              className="h-8 w-8 invert"
-            />
-            <img
-              src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/codechef.svg"
-              alt="CodeChef"
-              className="h-8 w-8 invert"
-            />
-            <img
-              src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/hackerrank.svg"
-              alt="HackerRank"
-              className="h-8 w-8 invert"
-            />
-            <img
-              src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/geeksforgeeks.svg"
-              alt="GeeksforGeeks"
-              className="h-8 w-8 invert"
-            />
-          </div>
-
           <div className="mt-10">
             <h2 className="xl:text-2xl text-lg font-semibold mb-5">
               View Leaderboards
