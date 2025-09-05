@@ -40,14 +40,6 @@ const LeaderBoardOutline = () => {
         ]);
 
         let transformedData = transformUserData(users);
-        transformedData = transformedData.sort(
-          (a, b) => parseFloat(b.percentile) - parseFloat(a.percentile)
-        );
-        transformedData = transformedData.map((user, idx) => ({
-          ...user,
-          serial: idx + 1,
-        }));
-
         setData(transformedData);
         setScrapingStats(stats);
       } catch (err) {
@@ -126,7 +118,6 @@ const LeaderBoardOutline = () => {
           <div className="hidden md:flex p-4 bg-black border-b border-zinc-800">
             <div className="flex justify-between items-center w-full">
               <div className="flex items-center gap-4 flex-1">
-                
                 <input
                   type="text"
                   className="p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none flex-1"
@@ -170,7 +161,6 @@ const LeaderBoardOutline = () => {
         <div className="md:hidden p-4 bg-black border-b border-zinc-800">
           <div className="flex flex-col space-y-4">
             <div className="flex flex-row items-center justify-center">
-             
               {scrapingStats && (
                 <div className="text-zinc-400 text-md">
                   Last updated:{" "}
@@ -199,7 +189,6 @@ const LeaderBoardOutline = () => {
         <div className="hidden md:flex p-4 bg-black border-b border-zinc-800">
           <div className="flex justify-between items-center w-full">
             <div className="flex items-center gap-4 flex-1">
-             
               <input
                 type="text"
                 className="p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none flex-1"

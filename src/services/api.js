@@ -36,6 +36,7 @@ export const updateHandles = (batch, email, handles) =>
 
 export const transformUserData = (users) => {
   return users.map((user) => ({
+    serial:user.serial,
     rollNumber: user.Handle,
     codeforces: {
       handle: user.CodeforcesHandle?.handle || "",
