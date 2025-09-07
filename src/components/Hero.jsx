@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern";
 import { Link } from "react-router-dom";
 import { ShimmerButton } from "./magicui/shimmer-button";
+import Navbar from "./Navbar";
 
 const Hero = () => {
   return (
@@ -17,18 +18,7 @@ const Hero = () => {
         )}
       />
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-5">
-        <nav className="w-full max-w-6xl xl:h-15 h-12 backdrop-blur-sm bg-black/30 border border-zinc-800 flex items-center p-5 rounded-2xl justify-between fixed top-5">
-          <Link className="flex items-center-safe" >
-            <img src="/Codetrackr.svg" className="xl:h-12 h-10"/>
-            <h1 className="text-xl font-semibold tracking-wider xl:py-4">CodeTrackr</h1>
-          </Link>
-          <Link to={"/update-handles"}>
-            <button className="cursor-pointer bg-zinc-900 px-5 xl:py-2 py-1 rounded-lg hover:bg-zinc-950 transition-all duration-300 border border-zinc-800">
-              <span className="hidden sm:inline">Update Username</span>
-              <span className="inline sm:hidden text-sm">Update</span>
-            </button>
-          </Link>
-        </nav>
+        <Navbar />
 
         <main className="flex flex-col items-center justify-center text-center w-full h-screen">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-400">

@@ -27,12 +27,8 @@ export const fetchScrapingStats = async (batch) => {
   }
 };
 
-export const sendOtp = (batch, email) =>
-  api.post(`/api/users/${batch}/send-otp`, { email });
-export const verifyOtp = (batch, email, otp) =>
-  api.post(`/api/users/${batch}/verify-otp`, { email, otp });
-export const updateHandles = (batch, email, handles) =>
-  api.post(`/api/users/${batch}/update-handles`, { email, handles });
+export const updateHandles = (batch, handles) =>
+  api.post(`/api/users/${batch}/update-handles`, { handles });
 
 export const transformUserData = (users) => {
   return users.map((user) => ({
