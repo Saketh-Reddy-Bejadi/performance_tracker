@@ -30,6 +30,20 @@ export const fetchScrapingStats = async (batch) => {
 export const updateHandles = (batch, handles) =>
   api.post(`/api/users/${batch}/update-handles`, { handles });
 
+export const fetchDashboardData = async (batch, token) => {
+  try {
+    const response = await api.get(`/api/dashboard/${batch}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    throw error;
+  }
+};
+
 export const transformUserData = (users) => {
   return users.map((user) => ({
     serial:user.serial,

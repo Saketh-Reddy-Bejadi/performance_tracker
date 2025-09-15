@@ -15,8 +15,8 @@ const Features = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="text-center p-6 rounded-2xl bg-black/30 border border-zinc-800/50 backdrop-blur-sm hover:border-zinc-700 transition-all duration-300 group">
-              <div className="w-16 h-16 bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Trophy className="w-8 h-8 text-blue-400" />
+              <div className="w-16 h-16 bg-zinc-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Trophy className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">
                 Real-time Leaderboards
@@ -27,8 +27,8 @@ const Features = () => {
             </div>
 
             <div className="text-center p-6 rounded-2xl bg-black/30 border border-zinc-800/50 backdrop-blur-sm hover:border-zinc-700 transition-all duration-300 group">
-              <div className="w-16 h-16 bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <TrendingUp className="w-8 h-8 text-green-400" />
+              <div className="w-16 h-16 bg-zinc-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <TrendingUp className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">
                 Performance Analytics
@@ -39,8 +39,8 @@ const Features = () => {
             </div>
 
             <div className="text-center p-6 rounded-2xl bg-black/30 border border-zinc-800/50 backdrop-blur-sm hover:border-zinc-700 transition-all duration-300 group">
-              <div className="w-16 h-16 bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Users className="w-8 h-8 text-purple-400" />
+              <div className="w-16 h-16 bg-zinc-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Users className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">
                 Handle Management
@@ -51,8 +51,8 @@ const Features = () => {
             </div>
 
             <div className="text-center p-6 rounded-2xl bg-black/30 border border-zinc-800/50 backdrop-blur-sm hover:border-zinc-700 transition-all duration-300 group">
-              <div className="w-16 h-16 bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Shield className="w-8 h-8 text-yellow-400" />
+              <div className="w-16 h-16 bg-zinc-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Shield className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">
                 Secure Authentication
@@ -63,8 +63,8 @@ const Features = () => {
             </div>
 
             <div className="text-center p-6 rounded-2xl bg-black/30 border border-zinc-800/50 backdrop-blur-sm hover:border-zinc-700 transition-all duration-300 group">
-              <div className="w-16 h-16 bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Zap className="w-8 h-8 text-red-400" />
+              <div className="w-16 h-16 bg-zinc-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Zap className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">
                 Automated Scraping
@@ -75,8 +75,8 @@ const Features = () => {
             </div>
 
             <div className="text-center p-6 rounded-2xl bg-black/30 border border-zinc-800/50 backdrop-blur-sm hover:border-zinc-700 transition-all duration-300 group">
-              <div className="w-16 h-16 bg-indigo-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <BarChart3 className="w-8 h-8 text-indigo-400" />
+              <div className="w-16 h-16 bg-zinc-900/30 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <BarChart3 className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">
                 Comprehensive Stats

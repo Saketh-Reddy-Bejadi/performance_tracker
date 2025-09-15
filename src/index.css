@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 body {
   background-color: #000000;
   color: #ffffff;
@@ -12,6 +10,9 @@ body {
   font-family: "Poppins", sans-serif;
   scrollbar-width: thin;
   scrollbar-color: rgba(140, 140, 140, 0.2) transparent;
+}
+.logo{
+  font-family: "Quicksand", sans-serif;
 }
 th {
   font-weight: 550;

@@ -1,4 +1,10 @@
-const StudentDataRow = ({ row, showDetails, rowColor, getPlatformColor, displayHandle }) => {
+const StudentDataRow = ({
+  row,
+  showDetails,
+  rowColor,
+  getPlatformColor,
+  displayHandle,
+}) => {
   return showDetails ? (
     <tr className={`whitespace-nowrap text-center ${rowColor}`}>
       <td className="px-4 py-5">{row.serial}</td>
@@ -17,8 +23,12 @@ const StudentDataRow = ({ row, showDetails, rowColor, getPlatformColor, displayH
       <td className={getPlatformColor(row.gfg, "gfg")}>
         {displayHandle(row.gfg.handle)}
       </td>
-      <td className={getPlatformColor(row.gfg, "gfg")}>{row.gfg.contestScore}</td>
-      <td className={getPlatformColor(row.gfg, "gfg")}>{row.gfg.practiceScore}</td>
+      <td className={getPlatformColor(row.gfg, "gfg")}>
+        {row.gfg.contestScore}
+      </td>
+      <td className={getPlatformColor(row.gfg, "gfg")}>
+        {row.gfg.practiceScore}
+      </td>
       <td className={getPlatformColor(row.gfg, "gfg")}>{row.gfg.count}</td>
 
       <td className={getPlatformColor(row.leetcode, "leetcode")}>

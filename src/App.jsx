@@ -7,6 +7,7 @@ import AuthSuccess from "./components/AuthSuccess";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UserProfile from "./components/UserProfile";
 import AuthCallback from "./components/AuthCallback";
+import Dashboard from "./components/Dashboard";
 
 const App = () => {
   return (
@@ -14,6 +15,14 @@ const App = () => {
       <div>
         <Routes>
           <Route path="/:batch" element={<LeaderBoardOutline />} />
+          <Route
+            path="/dashboard/:batch"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile/:batch"
             element={
