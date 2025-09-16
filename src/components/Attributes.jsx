@@ -3,7 +3,7 @@ import { IoMdMore } from "react-icons/io";
 const Attributes = ({ showDetails, setShowDetails }) => {
   return (
     <>
-      <thead className="sticky top-0 whitespace-nowrap bg-black text-lgz-1000">
+      <thead className="sticky top-0 whitespace-nowrap bg-black text-lgz-1000 z-10">
         <tr>
           <th
             rowSpan={`${showDetails ? "2" : ""}`}

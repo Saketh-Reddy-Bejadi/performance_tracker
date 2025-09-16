@@ -41,7 +41,6 @@ const UserProfile = () => {
   const fetchProfile = async () => {
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
-      console.log(token, apiUrl);
       const response = await fetch(`${apiUrl}/api/users/${batch}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -50,12 +49,10 @@ const UserProfile = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Profile data received:", data);
         setProfile(data.user);
 
         // Ensure restrictions data is properly formatted
         if (data.restrictions) {
-          console.log("Raw restrictions:", data.restrictions);
           const formattedRestrictions = {
             ...data.restrictions,
             nextHandleUpdate: data.restrictions.nextHandleUpdate
@@ -65,16 +62,15 @@ const UserProfile = () => {
               ? new Date(data.restrictions.nextScoreUpdate)
               : null,
           };
-          console.log("Formatted restrictions:", formattedRestrictions);
           setRestrictions(formattedRestrictions);
         }
 
         setHandles({
-          GeeksForGeeksHandle: data.user.GeeksForGeeksHandle?.handle || "",
-          CodeforcesHandle: data.user.CodeforcesHandle?.handle || "",
-          LeetCodeHandle: data.user.LeetCodeHandle?.handle || "",
-          CodeChefHandle: data.user.CodeChefHandle?.handle || "",
-          HackerRankHandle: data.user.HackerRankHandle?.handle || "",
+          GeeksForGeeksHandle: data.user.GeeksForGeeksHandle || "",
+          CodeforcesHandle: data.user.CodeforcesHandle || "",
+          LeetCodeHandle: data.user.LeetCodeHandle || "",
+          CodeChefHandle: data.user.CodeChefHandle || "",
+          HackerRankHandle: data.user.HackerRankHandle || "",
         });
       } else {
         setError("Failed to fetch profile");
@@ -318,7 +314,7 @@ const UserProfile = () => {
                     />
                   ) : (
                     <p className="text-zinc-300 font-medium">
-                      {profile[platform.key]?.handle || "Not set"}
+                      {profile[platform.key] || "Not set"}
                     </p>
                   )}
                 </div>

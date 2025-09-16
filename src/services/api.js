@@ -78,5 +78,6 @@ export const transformUserData = (users) => {
       practiceScore: Number((user.HackerRankHandle?.rating || 0).toFixed(2)),
     },
     percentile: `${Number((user.percentile || 0).toFixed(2))}%`,
+    consistency: `${user.consistency || 0}%`,
   }));
 };
