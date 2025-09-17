@@ -20,7 +20,12 @@ const AuthCallback = () => {
 
     if (errorParam) {
       setStatus("error");
-      setMessage(decodeURIComponent(errorParam));
+      try {
+        const errorData = JSON.parse(decodeURIComponent(errorParam));
+        setMessage(errorData.message || "An unknown error occurred.");
+      } catch (e) {
+        setMessage(decodeURIComponent(errorParam));
+      }
       setHasProcessed(true);
       return;
     }

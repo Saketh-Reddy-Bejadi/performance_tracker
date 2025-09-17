@@ -49,8 +49,6 @@ const GoogleLogin = () => {
             <option value="">Select Batch</option>
             <option value="2026">2026</option>
             <option value="2027">2027</option>
-            <option value="2028">2028</option>
-            <option value="2029">2029</option>
           </select>
         </div>
 
