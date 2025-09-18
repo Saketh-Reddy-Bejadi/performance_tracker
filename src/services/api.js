@@ -9,7 +9,7 @@ const api = axios.create({
 
 export const fetchUsers = async (batch) => {
   try {
-    const response = await api.get(`/api/users/${batch}`);
+    const response = await api.get(`/api/leaderboard/${batch}`);
     return response.data.users || [];
   } catch (error) {
     console.error("Error fetching users:", error);
