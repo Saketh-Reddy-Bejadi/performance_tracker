@@ -46,7 +46,7 @@ export const fetchDashboardData = async (batch, token) => {
 
 export const transformUserData = (users) => {
   return users.map((user) => ({
-    serial:user.serial,
+    serial:user.rank,
     rollNumber: user.Handle,
     codeforces: {
       handle: user.CodeforcesHandle?.handle || "",
@@ -77,7 +77,7 @@ export const transformUserData = (users) => {
       handle: user.HackerRankHandle?.handle || "",
       practiceScore: Number((user.HackerRankHandle?.rating || 0).toFixed(2)),
     },
-    percentile: `${Number((user.percentile || 0).toFixed(2))}%`,
+    percentile: `${Number((user.totalScore || 0).toFixed(2))}`,
     consistency: `${user.consistency || 0}%`,
   }));
 };

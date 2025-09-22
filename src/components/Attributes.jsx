@@ -34,7 +34,7 @@ const Attributes = ({ showDetails, setShowDetails }) => {
             HackerRank
           </th>
           <th rowSpan={`${showDetails ? "2" : ""}`} className=" px-4 py-5">
-            Percentile
+            Total Score
           </th>
         </tr>
         {showDetails ? (

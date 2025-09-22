@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import UserProfile from "./components/UserProfile";
 import AuthCallback from "./components/AuthCallback";
 import Dashboard from "./components/Dashboard";
+import TotalScoreCalculation from "./components/TotalScoreCalculation";
 
 const App = () => {
   return (
@@ -42,6 +43,10 @@ const App = () => {
           <Route path="/auth-callback" element={<AuthCallback />} />
           <Route path="/auth-success" element={<AuthSuccess />} />
           <Route path="/" element={<Home />} />
+          <Route
+            path="/calculation"
+            element={<TotalScoreCalculation />}
+          />
         </Routes>
       </div>
     </AuthProvider>

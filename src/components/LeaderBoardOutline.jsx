@@ -157,10 +157,6 @@ const LeaderBoardOutline = () => {
   return (
     <>
       <div className="overflow-hidden">
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
-          <p className="font-bold">Notice</p>
-          <p>The scores/percentile may not be accurate as the scores are being updated.</p>
-        </div>
         {/* Mobile Layout */}
         <div className="md:hidden p-4 bg-black border-b border-zinc-800">
           <div className="flex flex-col space-y-4">
