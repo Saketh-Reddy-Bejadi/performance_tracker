@@ -7,10 +7,21 @@ const api = axios.create({
   },
 });
 
-export const fetchUsers = async (batch) => {
+export const fetchUsers = async (batch, page = 1, limit = 20, search = '') => {
   try {
-    const response = await api.get(`/api/leaderboard/${batch}`);
-    return response.data.users || [];
+    const params = { page, limit };
+    if (search.trim()) {
+      params.search = search.trim();
+    }
+    
+    const response = await api.get(`/api/leaderboard/${batch}`, { params });
+    return {
+      users: response.data.users || [],
+      total: response.data.total || 0,
+      hasMore: response.data.hasMore || false,
+      totalPages: response.data.totalPages || 1,
+      currentPage: response.data.page || 1
+    };
   } catch (error) {
     console.error("Error fetching users:", error);
     throw error;

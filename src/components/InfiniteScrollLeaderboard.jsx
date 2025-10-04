@@ -1,102 +1,127 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { useParams} from "react-router-dom";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useParams } from "react-router-dom";
 import Attributes from "./Attributes";
 import StudentData from "./StudentData";
 import SkeletonLoader from "./SkeletonLoader";
-import {
-  fetchUsers,
-  transformUserData,
-  fetchScrapingStats,
-} from "../services/api";
+import TopLoader from "./TopLoader";
+import { fetchUsers, transformUserData, fetchScrapingStats } from "../services/api";
 
-const LeaderBoardOutline = () => {
+const InfiniteScrollLeaderboard = () => {
   const { batch } = useParams();
   const [showDetails, setShowDetails] = useState(true);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [scrapingStats, setScrapingStats] = useState(null);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 50,
+    total: 0,
+    hasMore: true
+  });
+
+  const searchTimeoutRef = useRef(null);
 
   // Debounce search input
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
       setDebouncedSearch(search);
     }, 300);
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
   }, [search]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
+  // Load data function
+  const loadData = useCallback(async (page = 1, reset = false, searchTerm = "") => {
+    try {
+      if (page === 1) {
         setLoading(true);
-        setError(null);
+      } else {
+        setLoadingMore(true);
+      }
+      setError(null);
 
-        const [users, stats] = await Promise.all([
-          fetchUsers(batch),
-          fetchScrapingStats(batch),
-        ]);
+      const response = await fetchUsers(batch, page, 50, searchTerm);
+      const transformedData = transformUserData(response.users);
 
-        let transformedData = transformUserData(users);
+      if (reset || page === 1) {
         setData(transformedData);
+      } else {
+        setData(prev => [...prev, ...transformedData]);
+      }
+
+      setPagination(prev => ({
+        ...prev,
+        page: response.currentPage,
+        total: response.total,
+        hasMore: response.hasMore
+      }));
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }, [batch]);
+
+  // Initial load and search handling
+  useEffect(() => {
+    if (batch) {
+      setPagination(prev => ({ ...prev, page: 1 }));
+      setData([]);
+      loadData(1, true, debouncedSearch);
+    }
+  }, [batch, debouncedSearch, loadData]);
+
+  // Load more function
+  const handleLoadMore = useCallback(() => {
+    if (!loadingMore && pagination.hasMore) {
+      loadData(pagination.page + 1, false, debouncedSearch);
+    }
+  }, [loadData, loadingMore, pagination.hasMore, pagination.page, debouncedSearch]);
+
+  // Load scraping stats
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const stats = await fetchScrapingStats(batch);
         setScrapingStats(stats);
       } catch (err) {
-        setError(err.message);
-        console.error("Failed to load data:", err);
-      } finally {
-        setLoading(false);
+        console.error("Failed to load scraping stats:", err);
       }
     };
 
-    loadData();
+    if (batch) {
+      loadStats();
+    }
   }, [batch]);
 
-  // Memoized filtered data
-  const filteredData = useMemo(() => {
-    if (!debouncedSearch.trim()) return data;
-
-    const q = debouncedSearch.trim().toLowerCase();
-    return data.filter((row) => {
-      // Create a single searchable string for better performance
-      const searchableText = [
-        row.rollNumber,
-        row.codeforces.handle,
-        row.gfg.handle,
-        row.leetcode.handle,
-        row.codechef.handle,
-        row.hackerRank.handle,
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      return searchableText.includes(q);
-    });
-  }, [data, debouncedSearch]);
-
-  // Optimized search handler
   const handleSearchChange = useCallback((e) => {
     setSearch(e.target.value);
   }, []);
 
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return "N/A";
-    try {
-      const date = new Date(timestamp);
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      const time = date.toLocaleTimeString();
-      return `${day}/${month}/${year}, ${time}`;
-    } catch {
-      return "Invalid timestamp";
-    }
+    const date = new Date(timestamp);
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   };
 
-  if (loading) {
+  if (loading && data.length === 0) {
     return (
       <>
+        <TopLoader isVisible={loading || loadingMore} />
         <div className="overflow-hidden">
           {/* Mobile Layout */}
           <div className="md:hidden p-4 bg-black border-b border-zinc-800">
@@ -146,7 +171,7 @@ const LeaderBoardOutline = () => {
     );
   }
 
-  if (error) {
+  if (error && data.length === 0) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="text-red-500 text-xl">Error: {error}</div>
@@ -156,6 +181,7 @@ const LeaderBoardOutline = () => {
 
   return (
     <>
+      <TopLoader isVisible={loading || loadingMore} />
       <div className="overflow-hidden">
         {/* Mobile Layout */}
         <div className="md:hidden p-4 bg-black border-b border-zinc-800">
@@ -163,15 +189,7 @@ const LeaderBoardOutline = () => {
             <div className="flex flex-row items-center justify-center">
               {scrapingStats && (
                 <div className="text-zinc-400 text-md">
-                  Last updated:{" "}
-                  {(() => {
-                    const d = new Date(scrapingStats.lastScraped);
-                    return `${d.getDate().toString().padStart(2, "0")}/${(
-                      d.getMonth() + 1
-                    )
-                      .toString()
-                      .padStart(2, "0")}/${d.getFullYear()}`;
-                  })()}
+                  Last updated: {formatTimestamp(scrapingStats.lastScraped)}
                 </div>
               )}
             </div>
@@ -205,22 +223,34 @@ const LeaderBoardOutline = () => {
           </div>
         </div>
 
-        <div className="max-h-[calc(100vh-80px)] text-black overflow-y-auto border border-zinc-800">
+        <div
+          className="max-h-[calc(100vh-80px)] text-black overflow-y-auto border border-zinc-800"
+          onScroll={(e) => {
+            const { scrollTop, scrollHeight, clientHeight } = e.target;
+            const isNearBottom = scrollTop + clientHeight >= scrollHeight - 200;
+
+            if (isNearBottom && pagination.hasMore && !loadingMore) {
+              handleLoadMore();
+            }
+          }}
+        >
           <table className="min-w-full table-auto border border-zinc-800 text-white">
             <Attributes
               showDetails={showDetails}
               setShowDetails={setShowDetails}
             />
             <StudentData
-              data={filteredData}
+              data={data}
               showDetails={showDetails}
               setShowDetails={setShowDetails}
               showSerialNumber={true}
             />
+
           </table>
         </div>
       </div>
     </>
   );
 };
-export default LeaderBoardOutline;
+
+export default InfiniteScrollLeaderboard;

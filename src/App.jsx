@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import LeaderBoardOutline from "./components/LeaderBoardOutline";
+import InfiniteScrollLeaderboard from "./components/InfiniteScrollLeaderboard";
 import Home from "./components/Home";
 import GoogleLogin from "./components/GoogleLogin";
 import AuthSuccess from "./components/AuthSuccess";
@@ -15,7 +15,7 @@ const App = () => {
     <AuthProvider>
       <div>
         <Routes>
-          <Route path="/:batch" element={<LeaderBoardOutline />} />
+          <Route path="/:batch" element={<InfiniteScrollLeaderboard />} />
           <Route
             path="/dashboard/:batch"
             element={
@@ -43,10 +43,7 @@ const App = () => {
           <Route path="/auth-callback" element={<AuthCallback />} />
           <Route path="/auth-success" element={<AuthSuccess />} />
           <Route path="/" element={<Home />} />
-          <Route
-            path="/calculation"
-            element={<TotalScoreCalculation />}
-          />
+          <Route path="/calculation" element={<TotalScoreCalculation />} />
         </Routes>
       </div>
     </AuthProvider>
