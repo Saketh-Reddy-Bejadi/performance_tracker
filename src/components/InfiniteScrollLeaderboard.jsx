@@ -18,7 +18,7 @@ const InfiniteScrollLeaderboard = () => {
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 50,
+    limit: 100, // Increased for better performance
     total: 0,
     hasMore: true
   });
@@ -33,7 +33,7 @@ const InfiniteScrollLeaderboard = () => {
 
     searchTimeoutRef.current = setTimeout(() => {
       setDebouncedSearch(search);
-    }, 300);
+    }, 500); // Increased debounce time
 
     return () => {
       if (searchTimeoutRef.current) {
@@ -52,7 +52,7 @@ const InfiniteScrollLeaderboard = () => {
       }
       setError(null);
 
-      const response = await fetchUsers(batch, page, 50, searchTerm);
+      const response = await fetchUsers(batch, page, 100, searchTerm);
       const transformedData = transformUserData(response.users);
 
       if (reset || page === 1) {
