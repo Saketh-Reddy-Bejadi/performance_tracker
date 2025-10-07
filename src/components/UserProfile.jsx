@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useParams } from "react-router-dom";
-import { User, Edit, Save, X, Clock } from "lucide-react";
+import { User, Edit, Save, X, Clock, AlertTriangle, CheckCircle } from "lucide-react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import TopLoader from "./TopLoader";
 import { PLATFROMS_DATA } from "../../data/platfromsData";
 
 const UserProfile = () => {
@@ -17,6 +18,7 @@ const UserProfile = () => {
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [verificationError, setVerificationError] = useState(null);
 
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return "N/A";
@@ -86,6 +88,7 @@ const UserProfile = () => {
     setUpdating(true);
     setError("");
     setSuccess("");
+    setVerificationError(null);
 
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -101,14 +104,21 @@ const UserProfile = () => {
         }
       );
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
-        setSuccess("Handles updated successfully!");
+        setSuccess(data.message || "Handles updated and verified as CMRIT student successfully!");
         setEditing(false);
         fetchProfile(); // Refresh profile data
+      } else if (response.status === 422) {
+        // CMRIT verification failed
+        setVerificationError({
+          message: data.message,
+          summary: data.verificationSummary,
+          platformDetails: data.platformDetails,
+        });
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to update handles");
+        setError(data.message || data.error || "Failed to update handles");
       }
     } catch (error) {
       setError("Network error");
@@ -121,14 +131,15 @@ const UserProfile = () => {
     setEditing(false);
     setError("");
     setSuccess("");
+    setVerificationError(null);
     // Reset handles to current values
     if (profile) {
       setHandles({
-        GeeksForGeeksHandle: profile.GeeksForGeeksHandle?.handle || "",
-        CodeforcesHandle: profile.CodeforcesHandle?.handle || "",
-        LeetCodeHandle: profile.LeetCodeHandle?.handle || "",
-        CodeChefHandle: profile.CodeChefHandle?.handle || "",
-        HackerRankHandle: profile.HackerRankHandle?.handle || "",
+        GeeksForGeeksHandle: profile.GeeksForGeeksHandle || "",
+        CodeforcesHandle: profile.CodeforcesHandle || "",
+        LeetCodeHandle: profile.LeetCodeHandle || "",
+        CodeChefHandle: profile.CodeChefHandle || "",
+        HackerRankHandle: profile.HackerRankHandle || "",
       });
     }
   };
@@ -162,6 +173,7 @@ const UserProfile = () => {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
+      <TopLoader isVisible={updating} />
       <Navbar />
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-5">
         <div className="max-w-4xl mx-auto px-4 mt-20">
@@ -202,8 +214,8 @@ const UserProfile = () => {
                     {restrictions.canUpdateHandles === true
                       ? "Available"
                       : restrictions.canUpdateHandles === false
-                      ? "Cooldown active"
-                      : "Unknown"}
+                        ? "Cooldown active"
+                        : "Unknown"}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -213,8 +225,8 @@ const UserProfile = () => {
                     {restrictions.canUpdateScores === true
                       ? "Available"
                       : restrictions.canUpdateScores === false
-                      ? "Cooldown active"
-                      : "Unknown"}
+                        ? "Cooldown active"
+                        : "Unknown"}
                   </span>
                 </div>
                 {restrictions.nextHandleUpdate && (
@@ -251,14 +263,15 @@ const UserProfile = () => {
                   <button
                     onClick={handleUpdateHandles}
                     disabled={updating}
-                    className="flex items-center justify-center gap-1 cursor-pointer bg-zinc-900 px-5 xl:py-2 py-1 rounded-lg hover:bg-zinc-950 transition-all duration-300 border border-zinc-800 w-28"
+                    className="flex items-center justify-center gap-1 cursor-pointer bg-zinc-900 px-5 xl:py-2 py-1 rounded-lg hover:bg-zinc-950 transition-all duration-300 border border-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Save className="w-4 h-4" />
-                    <span>{updating ? "Updating..." : "Save"}</span>
+                    <span>Save</span>
                   </button>
                   <button
                     onClick={handleCancel}
-                    className="flex items-center gap-1 cursor-pointer bg-zinc-900 px-5 xl:py-2 py-1 rounded-lg hover:bg-zinc-950 transition-all duration-300 border border-zinc-800"
+                    disabled={updating}
+                    className="flex items-center gap-1 cursor-pointer bg-zinc-900 px-5 xl:py-2 py-1 rounded-lg hover:bg-zinc-950 transition-all duration-300 border border-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <X className="w-4 h-4" />
                     <span>Cancel</span>
@@ -273,13 +286,84 @@ const UserProfile = () => {
               </div>
             )}
 
-            {success && (
-              <div className="bg-green-900/50 border border-green-700 text-green-300 px-4 py-3 rounded-md mb-4">
+            {updating && (
+              <div className="bg-blue-900/50 border border-blue-700 text-blue-300 px-4 py-3 rounded-md mb-4 flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
+                <span>Verifying your handles...</span>
+              </div>
+            )}
+
+            {success && !updating && (
+              <div className="bg-green-900/50 border border-green-700 text-green-300 px-4 py-3 rounded-md mb-4 flex items-center gap-2">
+                <CheckCircle className="w-5 h-5" />
                 {success}
               </div>
             )}
 
-            <div className="grid md:grid-cols-2 gap-6">
+            {verificationError && (
+              <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-md mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <AlertTriangle className="w-5 h-5" />
+                  <span className="font-semibold">
+                    Institution Verification Failed
+                  </span>
+                </div>
+                <p className="mb-3">
+                  All profiles must show "CMR Institute of Technology,
+                  Hyderabad"
+                </p>
+
+                {verificationError.platformDetails && (
+                  <div className="space-y-2">
+                    <p className="font-medium text-sm">Platform Status:</p>
+                    {verificationError.platformDetails.map(
+                      (platform, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between text-sm bg-red-800/30 rounded px-3 py-2"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                              {platform.platform}:
+                            </span>
+                            <span className="text-xs">{platform.handle}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {platform.error ? (
+                              <span className="text-red-400 text-xs">
+                                Error: {platform.error}
+                              </span>
+                            ) : !platform.profileExists ? (
+                              <span className="text-red-400 text-xs">
+                                Profile not found
+                              </span>
+                            ) : !platform.institution ? (
+                              <span className="text-red-400 text-xs">
+                                No institution info
+                              </span>
+                            ) : platform.isCMRIT ? (
+                              <span className="text-green-400 text-xs">
+                                CMRIT
+                              </span>
+                            ) : (
+                              <span className="text-red-400 text-xs">
+                                {platform.institution}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div
+              className={`grid md:grid-cols-2 gap-6 transition-opacity duration-300 ${
+                updating ? "opacity-60 pointer-events-none" : ""
+              }`}
+            >
               {PLATFROMS_DATA.map((platform) => (
                 <div
                   key={platform.key}
@@ -310,7 +394,8 @@ const UserProfile = () => {
                         }))
                       }
                       placeholder={`Enter ${platform.name} handle`}
-                      className="w-full px-3 py-2 border border-zinc-700/30 rounded-lg text-white placeholder:text-zinc-400 focus:outline-none transition"
+                      disabled={updating}
+                      className="w-full px-3 py-2 border border-zinc-700/30 rounded-lg text-white placeholder:text-zinc-400 focus:outline-none transition disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                   ) : (
                     <p className="text-zinc-300 font-medium">
