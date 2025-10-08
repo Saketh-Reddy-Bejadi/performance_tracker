@@ -59,6 +59,7 @@ export const transformUserData = (users) => {
   return users.map((user) => ({
     serial:user.rank,
     rollNumber: user.Handle,
+    isHandlesVerified: user.isHandlesVerified || false,
     codeforces: {
       handle: user.CodeforcesHandle?.handle || "",
       rating: Number((user.CodeforcesHandle?.rating || 0).toFixed(2)),

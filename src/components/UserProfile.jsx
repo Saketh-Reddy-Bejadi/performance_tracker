@@ -113,12 +113,17 @@ const UserProfile = () => {
       } else if (response.status === 422) {
         // CMRIT verification failed
         setVerificationError({
-          message: data.message,
-          summary: data.verificationSummary,
-          platformDetails: data.platformDetails,
+          message: data.error,
+          failedPlatforms: data.failedPlatforms
         });
+      } else if (response.status === 503 || response.status === 429) {
+        // Service temporarily unavailable or rate limited
+        const retryMessage = data.retryAfterMinutes
+          ? `Please try again in about ${data.retryAfterMinutes} minutes.`
+          : "Please try again in a few minutes.";
+        setError(`${data.error} ${retryMessage}`);
       } else {
-        setError(data.message || data.error || "Failed to update handles");
+        setError(data.error || data.message || "Failed to update handles");
       }
     } catch (error) {
       setError("Network error");
@@ -192,12 +197,27 @@ const UserProfile = () => {
                     <User className="w-8 h-8 text-zinc-500" />
                   </div>
                 )}
-                <div>
-                  <h1 className="text-xl font-bold text-white">
-                    {profile.name || profile.Handle}
-                  </h1>
-                  <p className="text-zinc-400 text-sm">{profile.email}</p>
-                  <p className="text-sm text-zinc-500">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                    <h1 className="text-lg sm:text-xl font-bold text-white truncate min-w-0">
+                      <span className="hidden sm:inline">
+                        {(profile.name || profile.Handle).length > 25
+                          ? `${(profile.name || profile.Handle).substring(0, 25)}...`
+                          : (profile.name || profile.Handle)
+                        }
+                      </span>
+                      <span className="inline sm:hidden">
+                        {(profile.name || profile.Handle).length > 15
+                          ? `${(profile.name || profile.Handle).substring(0, 15)}...`
+                          : (profile.name || profile.Handle)
+                        }
+                      </span>
+                    </h1>
+                    {profile.isHandlesVerified && (
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0" />
+                    )}
+                  </div>
+                  <p className="text-xs sm:text-sm text-zinc-500 mt-1">
                     Roll Number: {profile.Handle}
                   </p>
                 </div>
@@ -246,7 +266,7 @@ const UserProfile = () => {
           <div className="backdrop-blur-sm bg-black/30 border border-zinc-800/50 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-white">
-                Manage Coding Platform Handles
+                Coding Platform Handles
               </h2>
               {!editing && restrictions?.canUpdateHandles === true && (
                 <button
@@ -281,90 +301,59 @@ const UserProfile = () => {
             </div>
 
             {error && (
-              <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-md mb-4">
-                {error}
+              <div className="bg-red-900/50 border border-red-700 text-red-300 px-3 sm:px-4 py-3 rounded-md mb-4">
+                <div className="flex items-start sm:items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5 sm:mt-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm sm:text-base break-words">{error}</p>
+                    {(error.includes("try again") || error.includes("temporarily") || error.includes("minutes")) && (
+                      <div className="mt-2 p-2 bg-yellow-900/30 border border-yellow-700/50 rounded text-xs sm:text-sm">
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                          <span className="text-yellow-200">
+                            This is a temporary issue. The system will be available again shortly.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 
             {updating && (
               <div className="bg-blue-900/50 border border-blue-700 text-blue-300 px-4 py-3 rounded-md mb-4 flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
-                <span>Verifying your handles...</span>
+                <span>Verifying institution information...</span>
               </div>
             )}
 
             {success && !updating && (
-              <div className="bg-green-900/50 border border-green-700 text-green-300 px-4 py-3 rounded-md mb-4 flex items-center gap-2">
-                <CheckCircle className="w-5 h-5" />
-                {success}
+              <div className="bg-green-900/50 border border-green-700 text-green-300 px-3 sm:px-4 py-3 rounded-md mb-4 flex items-start sm:items-center gap-2">
+                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5 sm:mt-0" />
+                <span className="text-sm sm:text-base break-words min-w-0">{success}</span>
               </div>
             )}
 
             {verificationError && (
-              <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-md mb-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle className="w-5 h-5" />
-                  <span className="font-semibold">
-                    Institution Verification Failed
-                  </span>
+              <div className="bg-red-900/50 border border-red-700 text-red-300 px-3 sm:px-4 py-3 rounded-md mb-4">
+                <div className="flex items-start sm:items-center gap-2 mb-2">
+                  <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5 sm:mt-0" />
+                  <span className="font-medium text-sm sm:text-base">Verification failed</span>
                 </div>
-                <p className="mb-3">
-                  All profiles must show "CMR Institute of Technology,
-                  Hyderabad"
-                </p>
-
-                {verificationError.platformDetails && (
-                  <div className="space-y-2">
-                    <p className="font-medium text-sm">Platform Status:</p>
-                    {verificationError.platformDetails.map(
-                      (platform, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between text-sm bg-red-800/30 rounded px-3 py-2"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">
-                              {platform.platform}:
-                            </span>
-                            <span className="text-xs">{platform.handle}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {platform.error ? (
-                              <span className="text-red-400 text-xs">
-                                Error: {platform.error}
-                              </span>
-                            ) : !platform.profileExists ? (
-                              <span className="text-red-400 text-xs">
-                                Profile not found
-                              </span>
-                            ) : !platform.institution ? (
-                              <span className="text-red-400 text-xs">
-                                No institution info
-                              </span>
-                            ) : platform.isCMRIT ? (
-                              <span className="text-green-400 text-xs">
-                                CMRIT
-                              </span>
-                            ) : (
-                              <span className="text-red-400 text-xs">
-                                {platform.institution}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    )}
+                {verificationError.failedPlatforms && verificationError.failedPlatforms.length > 0 && (
+                  <div className="text-xs sm:text-sm">
+                    <span className="font-medium">Failed platforms: </span>
+                    <span className="text-red-200 break-words">
+                      {verificationError.failedPlatforms.join(", ")}
+                    </span>
                   </div>
                 )}
               </div>
             )}
 
-            <div
-              className={`grid md:grid-cols-2 gap-6 transition-opacity duration-300 ${
-                updating ? "opacity-60 pointer-events-none" : ""
-              }`}
-            >
-              {PLATFROMS_DATA.map((platform) => (
+            <div className={`grid md:grid-cols-2 gap-6 transition-opacity duration-300 ${updating ? 'opacity-60 pointer-events-none' : ''}`}>
+              {PLATFROMS_DATA && PLATFROMS_DATA.length > 0 ? PLATFROMS_DATA.map((platform) => (
                 <div
                   key={platform.key}
                   className="p-2 rounded-2xl bg-zinc-800/15 shadow-md border border-zinc-200/10 hover:shadow-xl hover:border-zinc-300/20 hover:scale-105 transition-transform duration-300 ease-out cursor-pointer flex items-center justify-evenly gap-2"
@@ -403,7 +392,11 @@ const UserProfile = () => {
                     </p>
                   )}
                 </div>
-              ))}
+              )) : (
+                <div className="col-span-2 text-center text-zinc-400">
+                  <p>No platforms data available</p>
+                </div>
+              )}
             </div>
 
             {restrictions?.canUpdateHandles === false && (

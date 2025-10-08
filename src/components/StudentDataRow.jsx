@@ -1,11 +1,15 @@
 import { MdOutlineStar } from "react-icons/md";
+import { CheckCircle } from "lucide-react";
 
 const StudentDataRow = ({ row, showDetails }) => {
   return showDetails ? (
     <tr className={`whitespace-nowrap text-center`}>
       <td className="px-4 py-5">{row.serial}</td>
-      <td className="flex items-center justify-center h-17 gap-3 px-2">
+      <td className="flex items-center justify-center h-17 gap-2 px-2">
         <span>{row.rollNumber}</span>
+        {row.isHandlesVerified && (
+          <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
+        )}
         <MdOutlineStar size={22} color="#FFD700" opacity={row.consistency} />
       </td>
 
@@ -34,7 +38,12 @@ const StudentDataRow = ({ row, showDetails }) => {
   ) : (
     <tr className={`whitespace-nowrap text-center`}>
       <td className="px-4 py-5">{row.serial}</td>
-      <td>{row.rollNumber}</td>
+      <td className="flex items-center justify-center gap-2 px-2">
+        <span>{row.rollNumber}</span>
+        {row.isHandlesVerified && (
+          <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
+        )}
+      </td>
       <td className={row.codeforces}>{row.codeforces.rating}</td>
       <td className={row.gfg}>{row.gfg.contestScore}</td>
       <td className={row.leetcode}>{row.leetcode.rating}</td>
