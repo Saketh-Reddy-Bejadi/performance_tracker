@@ -1,4 +1,6 @@
 import { IoMdMore } from "react-icons/io";
+import { Link } from "react-router-dom";
+import { Info } from "lucide-react";
 
 const Attributes = ({ showDetails, setShowDetails }) => {
   return (
@@ -34,7 +36,12 @@ const Attributes = ({ showDetails, setShowDetails }) => {
             HackerRank
           </th>
           <th rowSpan={`${showDetails ? "2" : ""}`} className=" px-4 py-5">
-            Total Score
+            <div className="flex items-center justify-center gap-1">
+              <Link to="/calculation">
+                <Info className="w-4 h-4 text-zinc-400 flex-shrink-0" />
+              </Link>
+              Total Score
+            </div>
           </th>
         </tr>
         {showDetails ? (

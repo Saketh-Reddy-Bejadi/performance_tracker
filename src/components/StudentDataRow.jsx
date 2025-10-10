@@ -33,7 +33,7 @@ const StudentDataRow = ({ row, showDetails }) => {
       <td className={row.hackerRank}>{row.hackerRank.handle}</td>
       <td className={row.hackerRank}>{row.hackerRank.practiceScore}</td>
 
-      <td>{row.percentile}</td>
+      <td>{row.totalScore}</td>
     </tr>
   ) : (
     <tr className={`whitespace-nowrap text-center`}>
@@ -49,7 +49,7 @@ const StudentDataRow = ({ row, showDetails }) => {
       <td className={row.leetcode}>{row.leetcode.rating}</td>
       <td className={row.codechef}>{row.codechef.practiceScore}</td>
       <td className={row.hackerRank}>{row.hackerRank.practiceScore}</td>
-      <td>{row.percentile}</td>
+      <td>{row.totalScore}</td>
     </tr>
   );
 };

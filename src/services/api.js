@@ -7,20 +7,11 @@ const api = axios.create({
   },
 });
 
-export const fetchUsers = async (batch, page = 1, limit = 20, search = '') => {
+export const fetchUsers = async (batch) => {
   try {
-    const params = { page, limit };
-    if (search.trim()) {
-      params.search = search.trim();
-    }
-    
-    const response = await api.get(`/api/leaderboard/${batch}`, { params });
+    const response = await api.get(`/api/leaderboard/${batch}`);
     return {
       users: response.data.users || [],
-      total: response.data.total || 0,
-      hasMore: response.data.hasMore || false,
-      totalPages: response.data.totalPages || 1,
-      currentPage: response.data.page || 1
     };
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -57,7 +48,7 @@ export const fetchDashboardData = async (batch, token) => {
 
 export const transformUserData = (users) => {
   return users.map((user) => ({
-    serial:user.rank,
+    serial: user.rank,
     rollNumber: user.Handle,
     isHandlesVerified: user.isHandlesVerified || false,
     codeforces: {
@@ -89,7 +80,7 @@ export const transformUserData = (users) => {
       handle: user.HackerRankHandle?.handle || "",
       practiceScore: Number((user.HackerRankHandle?.rating || 0).toFixed(2)),
     },
-    percentile: `${Number((user.totalScore || 0).toFixed(2))}`,
+    totalScore: `${Number((user.totalScore || 0).toFixed(2))}`,
     consistency: `${user.consistency || 0}%`,
   }));
 };

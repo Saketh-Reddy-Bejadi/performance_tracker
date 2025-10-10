@@ -1,96 +1,49 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { SearchX } from "lucide-react";
 import Attributes from "./Attributes";
 import StudentData from "./StudentData";
 import SkeletonLoader from "./SkeletonLoader";
 import TopLoader from "./TopLoader";
-import { fetchUsers, transformUserData, fetchScrapingStats } from "../services/api";
+import {
+  fetchUsers,
+  transformUserData,
+  fetchScrapingStats,
+} from "../services/api";
+import { useDebounce } from "../hooks/useDebounce";
 
-const InfiniteScrollLeaderboard = () => {
+const Leaderboard = () => {
   const { batch } = useParams();
   const [showDetails, setShowDetails] = useState(true);
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [scrapingStats, setScrapingStats] = useState(null);
-  const [data, setData] = useState([]);
+  const [allData, setAllData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 100, // Increased for better performance
-    total: 0,
-    hasMore: true
-  });
 
-  const searchTimeoutRef = useRef(null);
+  const debouncedSearch = useDebounce(search, 400);
 
-  // Debounce search input
-  useEffect(() => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    searchTimeoutRef.current = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 500); // Increased debounce time
-
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, [search]);
-
-  // Load data function
-  const loadData = useCallback(async (page = 1, reset = false, searchTerm = "") => {
+  // Load all data once
+  const loadData = useCallback(async () => {
     try {
-      if (page === 1) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true);
-      }
+      setLoading(true);
       setError(null);
-
-      const response = await fetchUsers(batch, page, 100, searchTerm);
+      const response = await fetchUsers(batch);
       const transformedData = transformUserData(response.users);
-
-      if (reset || page === 1) {
-        setData(transformedData);
-      } else {
-        setData(prev => [...prev, ...transformedData]);
-      }
-
-      setPagination(prev => ({
-        ...prev,
-        page: response.currentPage,
-        total: response.total,
-        hasMore: response.hasMore
-      }));
-
+      setAllData(transformedData);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
-      setLoadingMore(false);
     }
   }, [batch]);
 
-  // Initial load and search handling
+  // Initial load
   useEffect(() => {
     if (batch) {
-      setPagination(prev => ({ ...prev, page: 1 }));
-      setData([]);
-      loadData(1, true, debouncedSearch);
+      loadData();
     }
-  }, [batch, debouncedSearch, loadData]);
-
-  // Load more function
-  const handleLoadMore = useCallback(() => {
-    if (!loadingMore && pagination.hasMore) {
-      loadData(pagination.page + 1, false, debouncedSearch);
-    }
-  }, [loadData, loadingMore, pagination.hasMore, pagination.page, debouncedSearch]);
+  }, [batch, loadData]);
 
   // Load scraping stats
   useEffect(() => {
@@ -99,7 +52,7 @@ const InfiniteScrollLeaderboard = () => {
         const stats = await fetchScrapingStats(batch);
         setScrapingStats(stats);
       } catch (err) {
-        console.error("Failed to load scraping stats:", err);
+        setError(err.message);
       }
     };
 
@@ -107,6 +60,29 @@ const InfiniteScrollLeaderboard = () => {
       loadStats();
     }
   }, [batch]);
+
+  const searchableData = useMemo(() => {
+    return allData.map((user) => ({
+      ...user,
+      searchString:
+        `${user.rollNumber} ${user.codeforces.handle} ${user.gfg.handle} ${user.leetcode.handle} ${user.codechef.handle} ${user.hackerRank.handle}`.toLowerCase(),
+    }));
+  }, [allData]);
+
+  const filteredData = useMemo(() => {
+    if (!debouncedSearch.trim()) {
+      return allData;
+    }
+
+    const searchTerm = debouncedSearch.trim().toLowerCase();
+
+    // Optimized search using filter with early return
+    return allData.filter((user, index) => {
+      return searchableData[index]?.searchString.includes(searchTerm);
+    });
+  }, [searchableData, allData, debouncedSearch]);
+
+  const displayedData = filteredData;
 
   const handleSearchChange = useCallback((e) => {
     setSearch(e.target.value);
@@ -118,10 +94,10 @@ const InfiniteScrollLeaderboard = () => {
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   };
 
-  if (loading && data.length === 0) {
+  if (loading) {
     return (
       <>
-        <TopLoader isVisible={loading || loadingMore} />
+        <TopLoader isVisible={loading} />
         <div className="overflow-hidden">
           {/* Mobile Layout */}
           <div className="md:hidden p-4 bg-black border-b border-zinc-800">
@@ -171,7 +147,7 @@ const InfiniteScrollLeaderboard = () => {
     );
   }
 
-  if (error && data.length === 0) {
+  if (error) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="text-red-500 text-xl">Error: {error}</div>
@@ -181,7 +157,7 @@ const InfiniteScrollLeaderboard = () => {
 
   return (
     <>
-      <TopLoader isVisible={loading || loadingMore} />
+      <TopLoader isVisible={false} />
       <div className="overflow-hidden">
         {/* Mobile Layout */}
         <div className="md:hidden p-4 bg-black border-b border-zinc-800">
@@ -209,7 +185,7 @@ const InfiniteScrollLeaderboard = () => {
             <div className="flex items-center gap-4 flex-1">
               <input
                 type="text"
-                className="p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none flex-1"
+                className="search-input p-2 rounded bg-zinc-900 text-white placeholder-zinc-400 outline-none flex-1"
                 placeholder="Search by roll number or any handle..."
                 value={search}
                 onChange={handleSearchChange}
@@ -223,29 +199,59 @@ const InfiniteScrollLeaderboard = () => {
           </div>
         </div>
 
-        <div
-          className="max-h-[calc(100vh-80px)] text-black overflow-y-auto border border-zinc-800"
-          onScroll={(e) => {
-            const { scrollTop, scrollHeight, clientHeight } = e.target;
-            const isNearBottom = scrollTop + clientHeight >= scrollHeight - 200;
-
-            if (isNearBottom && pagination.hasMore && !loadingMore) {
-              handleLoadMore();
-            }
-          }}
-        >
-          <table className="min-w-full table-auto border border-zinc-800 text-white">
+        <div className="leaderboard-container max-h-[calc(100vh-80px)] text-black overflow-y-auto border border-zinc-800">
+          <table className="leaderboard-table min-w-full table-auto border border-zinc-800 text-white">
             <Attributes
               showDetails={showDetails}
               setShowDetails={setShowDetails}
             />
-            <StudentData
-              data={data}
-              showDetails={showDetails}
-              setShowDetails={setShowDetails}
-              showSerialNumber={true}
-            />
-
+            {loading ? (
+              <SkeletonLoader showDetails={showDetails} />
+            ) : displayedData.length === 0 ? (
+              <tbody>
+                <tr>
+                  <td colSpan={showDetails ? 18 : 8} className="py-8 px-4">
+                    <div className="flex items-center gap-4 text-zinc-400 bg-zinc-900/50 rounded-lg p-6 border border-zinc-800">
+                      <SearchX className="w-8 h-8 text-zinc-500 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="text-lg font-semibold text-zinc-300 mb-2">
+                          No Results Found
+                        </div>
+                        <div className="text-sm text-zinc-500">
+                          {search.trim() ? (
+                            <>
+                              No students found matching "
+                              <span className="text-zinc-300 font-medium">
+                                {search.trim()}
+                              </span>
+                              ". Try searching with a different roll number or
+                              handle.
+                            </>
+                          ) : (
+                            "No student data available for this batch."
+                          )}
+                        </div>
+                        {search.trim() && (
+                          <button
+                            onClick={() => setSearch("")}
+                            className="mt-3 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm rounded transition-colors duration-200"
+                          >
+                            Clear Search
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            ) : (
+              <StudentData
+                data={displayedData}
+                showDetails={showDetails}
+                setShowDetails={setShowDetails}
+                showSerialNumber={true}
+              />
+            )}
           </table>
         </div>
       </div>
@@ -253,4 +259,4 @@ const InfiniteScrollLeaderboard = () => {
   );
 };
 
-export default InfiniteScrollLeaderboard;
+export default Leaderboard;
